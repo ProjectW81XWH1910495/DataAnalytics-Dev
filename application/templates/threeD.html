@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="site-header-logo">
+        <h1 class="text-center">
+            3D Graph
+        </h1>
+    </div>
+
+    <div class="row p-6">
+        <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
+            <div class="card-body">
+                <form id="form1" action="/chart3" method="POST" enctype="multipart/form-data">
+                    <label class="mr-sm-2" for="inlineFormCustomSelect">Datasetname</label>
+                    <select id="dataset_name" name = "dataset_name">
+                        <option value="5I240_learningrate_s1_retrieve">5I240_learningrate_s1_retrieve</option>
+                        <option value="5I240_learningrate_s2_retrieve">5I240_learningrate_s2_retrieve</option>
+                        <option value="5I240_learningrate_s3_retrieve">5I240_learningrate_s3_retrieve</option>
+                        <option value="5I240_learningrate_s4_retrieve">5I240_learningrate_s4_retrieve</option>
+                        <option value="5I240_h4_merged_s1_retrieve">5I240_h4_merged_s1_retrieve</option>
+                        <option value="5I240_h4_merged_s2_retrieve">5I240_h4_merged_s2_retrieve</option>
+                        <option value="5I240_h4_merged_s3_retrieve">5I240_h4_merged_s3_retrieve</option>
+                        <option value="5I240_h4_merged_s4_retrieve">5I240_h4_merged_s4_retrieve</option>
+                        <option value="10I240_h4_merged_s1_retrieve">10I240_h4_merged_s1_retrieve</option>
+                        <option value="10I240_h4_merged_s2_retrieve">10I240_h4_merged_s2_retrieve</option>
+                        <option value="10I240_h4_merged_s3_retrieve">10I240_h4_merged_s3_retrieve</option>
+                        <option value="10I240_h4_merged_s4_retrieve">10I240_h4_merged_s4_retrieve</option>
+                        <option value="15I240_h4_merged_s1_retrieve">15I240_h4_merged_s1_retrieve</option>
+                        <option value="15I240_h4_merged_s2_retrieve">15I240_h4_merged_s2_retrieve</option>
+                        <option value="15I240_h4_merged_s3_retrieve">15I240_h4_merged_s3_retrieve</option>
+                        <option value="15I240_h4_merged_s4_retrieve">15I240_h4_merged_s4_retrieve</option>
+                    </select>
+                    <label class="mr-sm-2" for="inlineFormCustomSelect">X:</label>
+                    <select id="x_label" name = "x_label">
+                        <option value="1">node number in hidden layer 1</option>
+                        <option value="2">node number in hidden layer 2</option>
+                        <option value="3">node number in hidden layer 3</option>
+                        <option value="4">node number in hidden layer 4</option>
+                        <option value="L1">L1</option>
+                        <option value="L2">L2</option>
+                        <option value="dec">dec</option>
+                        <option value="drate">drate</option>
+                        <option value="lrate">lrate</option>
+                        <option value="momen">drate</option>
+                        <option value="layer_number">lrate</option>
+                        <option value="batch_size">batch_size</option>
+                        <option value="epochs">epochs</option>
+                    </select>
+                    <label class="mr-sm-2" for="inlineFormCustomSelect">Y:</label>
+                    <select id="y_label" name = "y_label">
+                        <option value="1">node number in hidden layer 1</option>
+                        <option value="2">node number in hidden layer 2</option>
+                        <option value="3">node number in hidden layer 3</option>
+                        <option value="4">node number in hidden layer 4</option>
+                        <option value="L1">L1</option>
+                        <option value="L2">L2</option>
+                        <option value="dec">dec</option>
+                        <option value="drate">drate</option>
+                        <option value="lrate">lrate</option>
+                        <option value="momen">drate</option>
+                        <option value="layer_number">lrate</option>
+                        <option value="batch_size">batch_size</option>
+                        <option value="epochs">epochs</option>
+                    </select>
+                    <label class="mr-sm-2" for="inlineFormCustomSelect">Z:</label>
+                    <select id="z_label" name = "z_label">
+                      <option value="mean_test_auc">mean_test_auc</option>
+                      <option value="mean_train_auc">mean_train_auc</option>
+                      <option value="percent_auc_diff">percent_auc_diff</option>
+                    </select>
+<!--                    #<button type="submit" class="btn btn-primary mr-5">Submit</button>-->
+                    <input type="submit" value="Submit">
+                </form>
+                <div id="chart3"></div>
+                <p class="card-text">some explanations</p>
+            </div>
+            </div>
+        </div>
+
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var graphs3 = {{ graph3JSON | safe}};
+        Plotly.plot("chart3", graphs3,{});
+        document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
+        document.getElementById('x_label').value = "<?php echo $_POST['x_label'];?>";
+        document.getElementById('y_label').value = "<?php echo $_POST['y_label'];?>";
+        document.getElementById('z_label').value = "<?php echo $_POST['y_label'];?>";
+    </script>
+
+{% endblock %}
