@@ -12,6 +12,7 @@
                 <form id="form1" action="/chart3" method="POST" enctype="multipart/form-data">
                     <label class="mr-sm-2" for="inlineFormCustomSelect">Datasetname</label>
                     <select id="dataset_name" name = "dataset_name">
+                        <option value ="000">--Select please--</option>
                         <option value="5I240_learningrate_s1_retrieve">5I240_learningrate_s1_retrieve</option>
                         <option value="5I240_learningrate_s2_retrieve">5I240_learningrate_s2_retrieve</option>
                         <option value="5I240_learningrate_s3_retrieve">5I240_learningrate_s3_retrieve</option>
@@ -31,6 +32,7 @@
                     </select>
                     <label class="mr-sm-2" for="inlineFormCustomSelect">X:</label>
                     <select id="x_label" name = "x_label">
+                        <option value ="000">--Select please--</option>
                         <option value="1">node number in hidden layer 1</option>
                         <option value="2">node number in hidden layer 2</option>
                         <option value="3">node number in hidden layer 3</option>
@@ -47,6 +49,7 @@
                     </select>
                     <label class="mr-sm-2" for="inlineFormCustomSelect">Y:</label>
                     <select id="y_label" name = "y_label">
+                        <option value ="000">--Select please--</option>
                         <option value="1">node number in hidden layer 1</option>
                         <option value="2">node number in hidden layer 2</option>
                         <option value="3">node number in hidden layer 3</option>
@@ -67,8 +70,11 @@
                       <option value="mean_train_auc">mean_train_auc</option>
                       <option value="percent_auc_diff">percent_auc_diff</option>
                     </select>
-<!--                    #<button type="submit" class="btn btn-primary mr-5">Submit</button>-->
-                    <input type="submit" value="Submit">
+                     <input type = "file" name = "dataset">
+                    <div>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+
                 </form>
                 <div id="chart3"></div>
                 <p class="card-text">some explanations</p>
