@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="site-header-logo">
+        <h1 class="text-center">
+            ROC_AUC Graph
+        </h1>
+    </div>
+
+    <div class="row p-4">
+        <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
+            <div class="card-body">
+                <form id="form1" action="/chart4" method="POST" enctype="multipart/form-data">
+                    <label class="mr-sm-2">Datasetname</label>
+                    <select id="dataset_name" name = "dataset_name">
+                        <option value ="000">--Select please--</option>
+                        <option value="15_DNM_pre_validation">15_DNM_pre_validation</option>
+
+                    </select>
+                    <label class="mr-sm-2" >X:</label>
+                    <select id="x_label" name = "x_label">
+                        <option value ="000">--Select please--</option>
+                        <option value="False Positive Rate">False Positive Rate</option>
+
+                    </select>
+                    <label class="mr-sm-2" >Y:</label>
+                    <select id="y_label" name = "y_label">
+                        <option value ="000">--Select please--</option>
+                        <option value="True Positive Rate">True Positive Rate</option>
+                    </select>
+                    <label class="mr-sm-2" >Thresholds:</label>
+                    <select id="thresholds" name = "thresholds_number">
+                        <option value ="000">--Select please--</option>
+                        <option value="10">10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                    <input type = "file" name = "dataset">
+
+                </form>
+                <div id="chart4"></div>
+                <p class="card-text">some explanations</p>
+            </div>
+            </div>
+        </div>
+<!--        <div class="site-header-logo">-->
+<!--                <h1 class="text-center">-->
+<!--                    Trend Graph-->
+<!--                </h1>-->
+<!--        </div>-->
+
+<!--        <div class="card mb-4 m-auto" style="width: 90%;" data-aos="fade-left">-->
+<!--            <div class="card-body">-->
+<!--                <div id="chart2"></div>-->
+<!--                <p class="card-text">some explanations</p>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="site-header-logo">-->
+<!--                <h1 class="text-center">-->
+<!--                    3D Graph-->
+<!--                </h1>-->
+<!--        </div>-->
+
+<!--        <div class="card mb-4 m-auto" style="width: 90%;" data-aos="slide-up">-->
+<!--            <div class="card-body">-->
+<!--                <div id="chart3"></div>-->
+<!--                <p class="card-text">some explanations</p>-->
+<!--            </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+    <!-- plotly CDN -->
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var graphs4 = {{ graph4JSON | safe}};
+        Plotly.plot("chart4", graphs4,{});
+        document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
+        document.getElementById('x_label').value = "<?php echo $_POST['x_label'];?>";
+        document.getElementById('y_label').value = "<?php echo $_POST['y_label'];?>";
+        document.getElementById('thresholds').value = "<?php echo $_POST['thresholds'];?>";
+
+
+        // var graphs2 = {{ graph2JSON | safe}};
+        // Plotly.plot("chart2", graphs2,{});
+        //
+        // var graphs3 = {{ graph3JSON | safe}};
+        // Plotly.plot("chart3", graphs3,{});
+    </script>
+
+{% endblock %}
