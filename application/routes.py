@@ -1,4 +1,4 @@
-from application import app
+from application import application
 from flask import render_template, request, url_for, redirect
 import pandas as pd
 import numpy as np
@@ -8,24 +8,24 @@ import plotly.express as px
 from werkzeug.utils import secure_filename
 
 
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('scatter.html')
 
-@app.route('/trend')
+@application.route('/trend')
 def trend():
     return render_template('trend.html')
-@app.route('/scatter')
+@application.route('/scatter')
 def scatter():
     return render_template('scatter.html')
-@app.route('/threeD')
+@application.route('/threeD')
 def threeD():
     return render_template('threeD.html')
-@app.route('/auc')
+@application.route('/auc')
 def auc():
     return render_template('auc.html')
 
-@app.route('/chart1', methods=['POST','GET'])
+@application.route('/chart1', methods=['POST','GET'])
 def chart1():
 
     if request.method == "POST":
@@ -51,7 +51,7 @@ def chart1():
             graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('scatter.html', graph1JSON=graph1JSON)
 
-@app.route('/chart2', methods=['POST','GET'])
+@application.route('/chart2', methods=['POST','GET'])
 def chart2():
         if request.method == "POST":
             x_label = request.form.get("x_label", None)
@@ -72,7 +72,7 @@ def chart2():
                 graph2JSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('trend.html', graph2JSON=graph2JSON)
 
-@app.route('/chart3', methods=['POST','GET'])
+@application.route('/chart3', methods=['POST','GET'])
 def chart3():
         if request.method == "POST":
             x_label = request.form.get("x_label", None)
@@ -92,7 +92,7 @@ def chart3():
                 fig3 = px.scatter_3d(x=df[x_label], y=df[y_label], z=df[z_label],title=title,color=df[z_label], labels=dict(x=x_label, y=y_label, z=z_label))
                 graph3JSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('threeD.html', graph3JSON=graph3JSON)
-@app.route('/chart4', methods=['POST','GET'])
+@application.route('/chart4', methods=['POST','GET'])
 def chart4():
         if request.method == "POST":
             x_label = request.form.get("x_label", None)
