@@ -10,25 +10,25 @@
         <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
             <div class="card-body">
                 <form id="form1" action="/chart3" method="POST" enctype="multipart/form-data">
-                    <label class="mr-sm-2" for="inlineFormCustomSelect">Datasetname</label>
+                    <label class="mr-sm-2" for="inlineFormCustomSelect">Datasetname:</label>
                     <select id="dataset_name" name = "dataset_name">
                         <option value ="000">--Select please--</option>
-                        <option value="5I240_learningrate_s1_retrieve">5I240_learningrate_s1_retrieve</option>
-                        <option value="5I240_learningrate_s2_retrieve">5I240_learningrate_s2_retrieve</option>
-                        <option value="5I240_learningrate_s3_retrieve">5I240_learningrate_s3_retrieve</option>
-                        <option value="5I240_learningrate_s4_retrieve">5I240_learningrate_s4_retrieve</option>
-                        <option value="5I240_h4_merged_s1_retrieve">5I240_h4_merged_s1_retrieve</option>
-                        <option value="5I240_h4_merged_s2_retrieve">5I240_h4_merged_s2_retrieve</option>
-                        <option value="5I240_h4_merged_s3_retrieve">5I240_h4_merged_s3_retrieve</option>
-                        <option value="5I240_h4_merged_s4_retrieve">5I240_h4_merged_s4_retrieve</option>
-                        <option value="10I240_h4_merged_s1_retrieve">10I240_h4_merged_s1_retrieve</option>
-                        <option value="10I240_h4_merged_s2_retrieve">10I240_h4_merged_s2_retrieve</option>
-                        <option value="10I240_h4_merged_s3_retrieve">10I240_h4_merged_s3_retrieve</option>
-                        <option value="10I240_h4_merged_s4_retrieve">10I240_h4_merged_s4_retrieve</option>
-                        <option value="15I240_h4_merged_s1_retrieve">15I240_h4_merged_s1_retrieve</option>
-                        <option value="15I240_h4_merged_s2_retrieve">15I240_h4_merged_s2_retrieve</option>
-                        <option value="15I240_h4_merged_s3_retrieve">15I240_h4_merged_s3_retrieve</option>
-                        <option value="15I240_h4_merged_s4_retrieve">15I240_h4_merged_s4_retrieve</option>
+                        <option value="5I240_learningrate_s1_retrieve">5I240_learningrate_s1</option>
+                        <option value="5I240_learningrate_s2_retrieve">5I240_learningrate_s2</option>
+                        <option value="5I240_learningrate_s3_retrieve">5I240_learningrate_s3</option>
+                        <option value="5I240_learningrate_s4_retrieve">5I240_learningrate_s4</option>
+                        <option value="5I240_h4_merged_s1_retrieve">5I240_h4_merged_s1</option>
+                        <option value="5I240_h4_merged_s2_retrieve">5I240_h4_merged_s2</option>
+                        <option value="5I240_h4_merged_s3_retrieve">5I240_h4_merged_s3</option>
+                        <option value="5I240_h4_merged_s4_retrieve">5I240_h4_merged_s4</option>
+                        <option value="10I240_h4_merged_s1_retrieve">10I240_h4_merged_s1</option>
+                        <option value="10I240_h4_merged_s2_retrieve">10I240_h4_merged_s2</option>
+                        <option value="10I240_h4_merged_s3_retrieve">10I240_h4_merged_s3</option>
+                        <option value="10I240_h4_merged_s4_retrieve">10I240_h4_merged_s4</option>
+                        <option value="15I240_h4_merged_s1_retrieve">15I240_h4_merged_s1</option>
+                        <option value="15I240_h4_merged_s2_retrieve">15I240_h4_merged_s2</option>
+                        <option value="15I240_h4_merged_s3_retrieve">15I240_h4_merged_s3</option>
+                        <option value="15I240_h4_merged_s4_retrieve">15I240_h4_merged_s4</option>
                     </select>
                     <label class="mr-sm-2" for="inlineFormCustomSelect">X:</label>
                     <select id="x_label" name = "x_label">
@@ -66,13 +66,14 @@
                     </select>
                     <label class="mr-sm-2" for="inlineFormCustomSelect">Z:</label>
                     <select id="z_label" name = "z_label">
-                      <option value="mean_test_auc">mean_test_auc</option>
-                      <option value="mean_train_auc">mean_train_auc</option>
-                      <option value="percent_auc_diff">percent_auc_diff</option>
+                        <option value ="000">--Select please--</option>
+                        <option value="mean_test_auc">mean_test_auc</option>
+                        <option value="mean_train_auc">mean_train_auc</option>
+                        <option value="percent_auc_diff">percent_auc_diff</option>
                     </select>
                      <input type = "file" name = "dataset">
                     <div>
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input  type="submit" class="btn btn-primary mt-1" value="Submit">
                     </div>
 
                 </form>

@@ -97,7 +97,9 @@ def chart4():
         if request.method == "POST":
             x_label = request.form.get("x_label", None)
             y_label = request.form.get("y_label", None)
-            thresholds_number = int(request.form.get("thresholds_number", None))
+            distinct_thresholds = request.form.get("distinct_thresholds", None)
+            print(distinct_thresholds.split(","))
+            thresholds_number = request.form.get("thresholds_number", None)
             if request.files:
                 f = request.files['dataset']
                 if str(secure_filename(f.filename)) != "":
@@ -110,7 +112,12 @@ def chart4():
                 df = pd.read_csv("dataset/ROC/" + str(dataset_name))
                 pre = np.array(df['pre']).tolist()
                 validation = np.array(df['validation']).tolist()
-                thresholds = sorted(np.linspace(0,1,thresholds_number),reverse =True)
+                if distinct_thresholds and thresholds_number == "distinct thresholds":
+                    thresholds = distinct_thresholds.split(",")
+                    thresholds = list(map(float,thresholds))
+                    print(thresholds)
+                else:
+                    thresholds = sorted(np.linspace(0,1,int(thresholds_number)),reverse =True)
                 fpr = []
                 tpr = []
                 #FPR = FP / (FP + TN)
