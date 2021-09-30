@@ -5,6 +5,7 @@ import numpy as np
 import json
 import plotly
 import plotly.express as px
+import os
 from werkzeug.utils import secure_filename
 
 
@@ -27,7 +28,7 @@ def auc():
 
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
-
+    graphJSON = {}
     if request.method == "POST":
         x_label = request.form.get("x_label", None)
         y_label = request.form.get("y_label", None)
@@ -45,11 +46,21 @@ def chart1():
 
     # Graph One
         if x_label and y_label and dataset_name:
-            df = pd.read_csv("dataset/retrieve/"+str(dataset_name))
+            df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
             title = "Dataset Name:" + str(dataset_name)
-            fig1 = px.scatter(x= df[x_label], y=df[y_label], color = df[y_label],title= title,labels=dict(x=x_label, y=y_label))
-            graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('scatter.html', graph1JSON=graph1JSON)
+            if y_label == "mean_test_auc and percent_auc_diff":
+                fig1 = px.scatter(x=df[x_label], y=df["mean_test_auc"], color=df["mean_test_auc"], title=title,
+                                  labels=dict(x=x_label, y="mean_test_auc"))
+                graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                fig2 = px.scatter(x=df[x_label], y=df["percent_auc_diff"], color=df["percent_auc_diff"], title=title,
+                                  labels=dict(x=x_label, y="percent_auc_diff"))
+                graph2JSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+            else:
+                fig1 = px.scatter(x= df[x_label], y=df[y_label], color = df[y_label],title= title,labels=dict(x=x_label, y=y_label))
+                graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                graph2JSON = "None"
+        os.remove("dataset/retrieve/" + str(dataset_name))
+    return render_template('scatter.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON)
 
 @application.route('/chart2', methods=['POST','GET'])
 def chart2():
@@ -70,6 +81,7 @@ def chart2():
                 title = "Dataset Name:" + str(dataset_name)
                 fig2 = px.line(x=df[x_label], y=df[y_label], title=title, labels=dict(x=x_label, y=y_label))
                 graph2JSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+        os.remove("dataset/retrieve/" + str(dataset_name))
         return render_template('trend.html', graph2JSON=graph2JSON)
 
 @application.route('/chart3', methods=['POST','GET'])
@@ -89,9 +101,19 @@ def chart3():
             if x_label and y_label and dataset_name:
                 df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
                 title = "Dataset Name:" + str(dataset_name)
-                fig3 = px.scatter_3d(x=df[x_label], y=df[y_label], z=df[z_label],title=title,color=df[z_label], labels=dict(x=x_label, y=y_label, z=z_label))
-                graph3JSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
-        return render_template('threeD.html', graph3JSON=graph3JSON)
+                if z_label == "mean_test_auc and percent_auc_diff":
+                    fig1 = px.scatter_3d(x=df[x_label], y=df[y_label], z=df["mean_test_auc"],title=title,color=df["mean_test_auc"], labels=dict(x=x_label, y=y_label, z="mean_test_auc"))
+                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                    fig2 = px.scatter_3d(x=df[x_label], y=df[y_label], z=df["percent_auc_diff"], title=title, color=df["percent_auc_diff"],
+                                         labels=dict(x=x_label, y=y_label, z="percent_auc_diff"))
+                    graph2JSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+                else:
+                    fig1 = px.scatter_3d(x=df[x_label], y=df[y_label], z=df[z_label], title=title, color=df[z_label],
+                                         labels=dict(x=x_label, y=y_label, z=z_label))
+                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                    graph2JSON = "None"
+            os.remove("dataset/retrieve/" + str(dataset_name))
+        return render_template('threeD.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON)
 @application.route('/chart4', methods=['POST','GET'])
 def chart4():
         if request.method == "POST":
