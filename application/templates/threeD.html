@@ -5,13 +5,17 @@
             3D Graph
         </h1>
     </div>
-
     <div class="row p-6">
         <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
             <div class="card-body">
                 <form id="form1" action="/chart3" method="POST" enctype="multipart/form-data">
                     <label class="mr-sm-2" for="inlineFormCustomSelect">Datasetname:</label>
                     <select id="dataset_name" name = "dataset_name">
+                        {% if dataset_name %}
+                            <option value = {{ dataset_name }}>{{ dataset_name }}</option>
+                        {% else %}
+                            <option value ="000">--Select please--</option>
+                        {% endif %}
                         <option value ="000">--Select please--</option>
                         <option value="5I240_learningrate_s1_retrieve">5I240_learningrate_s1</option>
                         <option value="5I240_learningrate_s2_retrieve">5I240_learningrate_s2</option>
@@ -94,7 +98,7 @@
             var graphs2 = {{ graph2JSON | safe}};
             Plotly.plot("chart2", graphs2,{});
         }
-        document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
+        //document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
         document.getElementById('x_label').value = "<?php echo $_POST['x_label'];?>";
         document.getElementById('y_label').value = "<?php echo $_POST['y_label'];?>";
         document.getElementById('z_label').value = "<?php echo $_POST['y_label'];?>";

@@ -41,7 +41,11 @@ def chart1():
                 f.save(upload_path)
                 dataset_name = str(secure_filename(f.filename))
             else:
-                dataset_name = request.form.get("dataset_name", None) + ".csv"
+                dataset_name = request.form.get("dataset_name", None)
+                if ".csv" in dataset_name:
+                    dataset_name = dataset_name
+                else:
+                    dataset_name = request.form.get("dataset_name", None) + ".csv"
 
 
     # Graph One
@@ -59,8 +63,8 @@ def chart1():
                 fig1 = px.scatter(x= df[x_label], y=df[y_label], color = df[y_label],title= title,labels=dict(x=x_label, y=y_label))
                 graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
                 graph2JSON = "None"
-        os.remove("dataset/retrieve/" + str(dataset_name))
-    return render_template('scatter.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON)
+        #os.remove("dataset/retrieve/" + str(dataset_name))
+    return render_template('scatter.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON,dataset_name = dataset_name)
 
 @application.route('/chart2', methods=['POST','GET'])
 def chart2():
@@ -74,15 +78,28 @@ def chart2():
                     f.save(upload_path)
                     dataset_name = str(secure_filename(f.filename))
                 else:
-                    dataset_name = request.form.get("dataset_name", None) + ".csv"
+                    dataset_name = request.form.get("dataset_name", None)
+                    if ".csv" in dataset_name:
+                        dataset_name = dataset_name
+                    else:
+                        dataset_name = request.form.get("dataset_name", None) + ".csv"
             # Graph Two
             if x_label and y_label and dataset_name:
                 df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
                 title = "Dataset Name:" + str(dataset_name)
-                fig2 = px.line(x=df[x_label], y=df[y_label], title=title, labels=dict(x=x_label, y=y_label))
-                graph2JSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
-        os.remove("dataset/retrieve/" + str(dataset_name))
-        return render_template('trend.html', graph2JSON=graph2JSON)
+                if y_label == "mean_test_auc and percent_auc_diff":
+                    fig1 = px.line(x=df[x_label], y=df["mean_test_auc"], title=title, labels=dict(x=x_label, y="mean_test_auc"))
+                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                    fig2 = px.line(x=df[x_label], y=df["percent_auc_diff"], title=title, labels=dict(x=x_label, y="percent_auc_diff"))
+                    graph2JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                else:
+                    fig1 = px.line(x=df[x_label], y=df[y_label], title=title,
+                                   labels=dict(x=x_label, y=y_label))
+                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                    graph2JSON = "None"
+
+        #os.remove("dataset/retrieve/" + str(dataset_name))
+        return render_template('trend.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON,dataset_name = dataset_name)
 
 @application.route('/chart3', methods=['POST','GET'])
 def chart3():
@@ -97,7 +114,11 @@ def chart3():
                     f.save(upload_path)
                     dataset_name = str(secure_filename(f.filename))
                 else:
-                    dataset_name = request.form.get("dataset_name", None) + ".csv"
+                    dataset_name = request.form.get("dataset_name", None)
+                    if ".csv" in dataset_name:
+                        dataset_name = dataset_name
+                    else:
+                        dataset_name = request.form.get("dataset_name", None) + ".csv"
             if x_label and y_label and dataset_name:
                 df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
                 title = "Dataset Name:" + str(dataset_name)
@@ -112,8 +133,8 @@ def chart3():
                                          labels=dict(x=x_label, y=y_label, z=z_label))
                     graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
                     graph2JSON = "None"
-            os.remove("dataset/retrieve/" + str(dataset_name))
-        return render_template('threeD.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON)
+            #os.remove("dataset/retrieve/" + str(dataset_name))
+        return render_template('threeD.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON, dataset_name = dataset_name)
 @application.route('/chart4', methods=['POST','GET'])
 def chart4():
         if request.method == "POST":
