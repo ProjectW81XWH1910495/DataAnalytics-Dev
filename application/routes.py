@@ -51,6 +51,10 @@ def chart1():
     # Graph One
         if x_label and y_label and dataset_name:
             df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
+            heads= list(df.columns)
+            table = df.values.tolist()[:100]
+            # print(head)
+            # print(table)
             title = "Dataset Name:" + str(dataset_name)
             if y_label == "mean_test_auc and percent_auc_diff":
                 fig1 = px.scatter(x=df[x_label], y=df["mean_test_auc"], color=df["mean_test_auc"], title=title,
@@ -62,9 +66,9 @@ def chart1():
             else:
                 fig1 = px.scatter(x= df[x_label], y=df[y_label], color = df[y_label],title= title,labels=dict(x=x_label, y=y_label))
                 graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
-                graph2JSON = "None"
+                graph2JSON = "undefined"
         #os.remove("dataset/retrieve/" + str(dataset_name))
-    return render_template('scatter.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON,dataset_name = dataset_name)
+    return render_template('scatter.html', graph1JSON=graph1JSON, graph2JSON=graph2JSON, dataset_name = dataset_name, table = table, heads= heads)
 
 @application.route('/chart2', methods=['POST','GET'])
 def chart2():
