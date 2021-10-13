@@ -1,7 +1,0 @@
-ml_classifier_name,mean_test_auc,mean_train_auc,percent_auc_diff,L1,L2,batch_size,dec,drate,epochs,hacti,iacti,idim,kinit,lrate,ls,ltype,momen,mstruct,oacti,opti,1,2,3,4,layer_number
-'deep learning keras',0.501563,0.518032,0.032835,0.008,0.008,268,0.0005,0,30,relu,relu,20,he_normal,0.001,binary_crossentropy,3,0.4,"(100, 300, 500, 1)",sigmoid,SGD,100.0,300.0,500.0,0.0,3.0
-'deep learning keras',0.493287,0.498281,0.010123,0.008,0.008,268,0.0005,0.1,30,relu,relu,20,he_normal,0.001,binary_crossentropy,3,0.4,"(100, 300, 500, 1)",sigmoid,SGD,100.0,300.0,500.0,0.0,3.0
-'deep learning keras',0.452035,0.460907,0.019628,0.008,0.008,268,0.0005,0.2,30,relu,relu,20,he_normal,0.001,binary_crossentropy,3,0.4,"(100, 300, 500, 1)",sigmoid,SGD,100.0,300.0,500.0,0.0,3.0
-'deep learning keras',0.463107,0.467338,0.009136,0.008,0.008,268,0.0005,0.3,30,relu,relu,20,he_normal,0.001,binary_crossentropy,3,0.4,"(100, 300, 500, 1)",sigmoid,SGD,100.0,300.0,500.0,0.0,3.0
-'deep learning keras',0.457416,0.463392,0.013065,0.008,0.008,268,0.0005,0.4,30,relu,relu,20,he_normal,0.001,binary_crossentropy,3,0.4,"(100, 300, 500, 1)",sigmoid,SGD,100.0,300.0,500.0,0.0,3.0
-'deep learning keras',0.480078,0.475486,0.009564,0.008,0.008,268,0.0005,0.5,30,relu,relu,20,he_normal,0.001,binary_crossentropy,3,0.4,"(100, 300, 500, 1)",sigmoid,SGD,100.0,300.0,500.0,0.0,3.0
