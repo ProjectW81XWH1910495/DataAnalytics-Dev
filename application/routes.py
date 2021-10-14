@@ -33,6 +33,7 @@ def chart1():
         x_label = request.form.get("x_label", None)
         y_label = request.form.get("y_label", None)
 
+
         if request.files:
             f = request.files['dataset']
             if str(secure_filename(f.filename)) != "":
@@ -50,6 +51,8 @@ def chart1():
 
     # Graph One
         if x_label and y_label and dataset_name:
+            print(x_label)
+            print(y_label)
             df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
             heads= list(df.columns)
             table = df.values.tolist()[:100]
@@ -64,6 +67,7 @@ def chart1():
                                   labels=dict(x=x_label, y="percent_auc_diff"))
                 graph2JSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
             else:
+
                 fig1 = px.scatter(x= df[x_label], y=df[y_label], color = df[y_label],title= title,labels=dict(x=x_label, y=y_label))
                 graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
                 graph2JSON = "undefined"

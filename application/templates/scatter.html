@@ -137,7 +137,7 @@
               var reader = new FileReader();
               reader.addEventListener('load', function() {
 
-                const first_line_Arr = this.result.split('\n').shift().split(",");
+                var first_line_Arr = this.result.split('\n')[0].split(",");
                 console.log(first_line_Arr);
                 var x_select = document.getElementById("x_label");
                   removeOptions(x_select);
@@ -146,14 +146,14 @@
                 removeOptions(y_select);
                 for (var i=0;i<first_line_Arr.length;i++) {
                     var el = document.createElement("option");
-                    el.textContent = first_line_Arr[i];
-                    el.value = first_line_Arr[i];
+                    el.textContent = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    el.value = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
                     x_select.appendChild(el);
                 }
                 for (var i=0;i<first_line_Arr.length;i++) {
                     var yl = document.createElement("option");
-                    yl.textContent = first_line_Arr[i];
-                    yl.value = first_line_Arr[i];
+                    yl.textContent = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    yl.value = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
                     y_select.appendChild(yl);
 
                 }
