@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="site-header-logo">
+        <h1 class="text-center">
+            Wilcoxon Sign-Ranked Test
+        </h1>
+    </div>
+
+    <div class="row p-4">
+        <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
+            <div class="card-body">
+                <form id="form1" action="/chart5" method="POST" enctype="multipart/form-data">
+                    <label class="mr-sm-2" >Datasetname:</label>
+                    <select id="dataset_name" name = "dataset_name">
+                        {% if dataset_name %}
+                            <option value = {{ dataset_name }}>{{ dataset_name }}</option>
+                        {% else %}
+                            <option value ="000">--Select please--</option>
+                        {% endif %}
+
+                        <option value="Ml_wil_dataset">Ml_wil_dataset</option>
+
+                    </select>
+                    <label class="mr-sm-2" >Sample1:</label>
+                     <select id="Sample1" name = "Sample1">
+                         <option value ="000">--Select please--</option>
+                         <option value ="Sample1">Sample1</option>
+                     </select>
+
+                    <label class="mr-sm-2" >Sample2:</label>
+                    <select id="Sample2" name = "Sample2">
+                         <option value ="000">--Select please--</option>
+                         <option value ="Sample2">Sample2</option>
+                     </select>
+
+                        <input id= "submit" type="submit" class="btn btn-primary mt-1" value="Submit">
+                        <input id="file" type="file" name="dataset">
+                </form>
+                <button type="button" id="update_label" class="btn btn-dark mt-2 mb-2" >Update Label</button>
+                <button type="button" id="show_table" class="btn btn-dark mt-2 mb-2" >Show Table</button>
+                <div id="hidden_table" style="display:none">
+                    <table id="data" class="table table-striped" >
+                        <thead>
+                          <tr>
+                            {% for head in heads %}
+                                <th>{{ head }}</th>
+                            {% endfor %}
+                          </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                            </tr>
+	                    </tfoot>
+                        <tbody>
+                          {% for row in table %}
+                            <tr>
+                                {% for item in row %}
+                                    <td>{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                          {% endfor %}
+                        <tr>
+                                <th>{{ result }}</th>
+                          </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    <div id="chart1"></div>
+                    <div id="chart2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- plotly CDN -->
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+
+
+
+        document.getElementById("show_table").addEventListener('click', function(){
+            var hidden_table = document.getElementById("hidden_table")
+            if (hidden_table.style.display === 'inline'){
+                hidden_table.style.display = 'none';
+            }else{
+                $(document).ready(function () {
+                    $('#data').DataTable({
+                        "scrollX": true,
+                    });
+                }, false)
+                document.getElementById("hidden_table").style.display='inline'
+            }
+
+
+            });
+            document.getElementById("update_label").addEventListener("click", function() {
+
+              var reader = new FileReader();
+              reader.addEventListener('load', function() {
+
+                var first_line_Arr = this.result.split('\n')[0].split(",");
+                console.log(first_line_Arr);
+                var x_select = document.getElementById("Sample1");
+                  removeOptions(x_select);
+
+                var y_select = document.getElementById("Sample2");
+                removeOptions(y_select);
+                for (var i=0;i<first_line_Arr.length;i++) {
+                    var el = document.createElement("option");
+                    el.textContent = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    el.value = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    x_select.appendChild(el);
+                }
+                for (var i=0;i<first_line_Arr.length;i++) {
+                    var yl = document.createElement("option");
+                    yl.textContent = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    yl.value = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    y_select.appendChild(yl);
+
+                }
+
+              });
+              reader.readAsText(document.getElementById('file').files[0]);
+
+            });
+            function removeOptions(selectElement) {
+               var i, L = selectElement.options.length - 1;
+               for(i = L; i >= 0; i--) {
+                  selectElement.remove(i);
+            }
+}
+
+
+    </script>
+
+{% endblock %}

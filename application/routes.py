@@ -7,6 +7,7 @@ import plotly
 import plotly.express as px
 import os
 from werkzeug.utils import secure_filename
+from scipy import stats
 
 
 @application.route('/')
@@ -25,6 +26,9 @@ def threeD():
 @application.route('/auc')
 def auc():
     return render_template('auc.html')
+@application.route('/wil')
+def wil():
+    return render_template('wil.html')
 
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
@@ -198,6 +202,39 @@ def chart4():
                 fig4 = px.line(x=fpr, y=tpr,title=title, labels=dict(x=x_label, y=y_label))
                 graph4JSON = json.dumps(fig4, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('auc.html', graph4JSON=graph4JSON)
+
+@application.route('/chart5', methods=['POST','GET'])
+def chart5():
+    graphJSON = {}
+    if request.method == "POST":
+        Sample1 = request.form.get("Sample1", None)
+        Sample2 = request.form.get("Sample2", None)
+
+        if request.files:
+            f = request.files['dataset']
+            if str(secure_filename(f.filename)) != "":
+                upload_path = "dataset/retrieve/" + str(secure_filename(f.filename))
+                print(upload_path)
+                f.save(upload_path)
+                dataset_name = str(secure_filename(f.filename))
+            else:
+                dataset_name = request.form.get("dataset_name", None)
+                if ".csv" in dataset_name:
+                    dataset_name = dataset_name
+                else:
+                    dataset_name = request.form.get("dataset_name", None) + ".csv"
+
+        if Sample1 and Sample2 and dataset_name:
+
+            df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
+            heads= list(df.columns)
+            table = df.values.tolist()[:100]
+            print(heads)
+            print(table)
+            title = "Dataset Name:" + str(dataset_name)
+            result = stats.wilcoxon(df[Sample1], df[Sample2])
+            print(result)
+    return render_template('wil.html', result=result, dataset_name=dataset_name, table=table, heads=heads)
 # @app.route('/upload', methods = ['POST','GET'])
 # def upload():
 #     if request.method == 'POST':
