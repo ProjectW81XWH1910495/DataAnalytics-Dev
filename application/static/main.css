@@ -54,4 +54,17 @@ tfoot td {
   bottom: 0;
   width: 100%;
   text-align: center;
+  height:10%
 }
+/*footer{*/
+/*  position: fixed;*/
+/*  **height:10%;***/
+/*  width:100%;*/
+/*  padding-top: 2px;*/
+/*  bottom: 0;*/
+/*  clear: both;*/
+/*  background-color: black;*/
+/*  color: white;*/
+/*  float: left;*/
+/*  overflow: auto;*/
+/*}*/

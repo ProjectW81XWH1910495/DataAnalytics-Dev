@@ -29,6 +29,9 @@ def auc():
 @application.route('/wil')
 def wil():
     return render_template('wil.html')
+@application.route('/chi')
+def chi():
+    return render_template('chi.html')
 
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
@@ -237,6 +240,43 @@ def chart5():
             result = stats.wilcoxon(df[Sample1], df[Sample2])
             print(result)
     return render_template('wil.html', result=result, dataset_name=dataset_name, table=table, heads=heads)
+
+@application.route('/chart6', methods=['POST','GET'])
+def chart6():
+    graphJSON = {}
+    if request.method == "POST":
+        Sample1 = request.form.get("Sample1", None)
+        Sample2 = request.form.get("Sample2", None)
+
+        if request.files:
+            f = request.files['dataset']
+            if str(secure_filename(f.filename)) != "":
+                upload_path = "dataset/retrieve/" + str(secure_filename(f.filename))
+                print(upload_path)
+                f.save(upload_path)
+                dataset_name = str(secure_filename(f.filename))
+            else:
+                dataset_name = request.form.get("dataset_name", None)
+                if ".csv" in dataset_name:
+                    dataset_name = dataset_name
+                else:
+                    dataset_name = request.form.get("dataset_name", None) + ".csv"
+
+        if Sample1 and Sample2 and dataset_name:
+            print("Sample 1"+Sample1)
+            print("Sample 2" + Sample2)
+
+            df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
+            heads= list(df.columns)
+            table = df.values.tolist()[:100]
+            # print(heads)
+            # print(table)
+            print(df[Sample1])
+            print(df[Sample2])
+            title = "Dataset Name:" + str(dataset_name)
+            result = stats.chisquare(df[Sample1], df[Sample2])
+            print(result)
+    return render_template('chi.html', result=result, dataset_name=dataset_name, table=table, heads=heads)
 # @app.route('/upload', methods = ['POST','GET'])
 # def upload():
 #     if request.method == 'POST':
