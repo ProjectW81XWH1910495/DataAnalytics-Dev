@@ -225,6 +225,8 @@ def chart5():
                     dataset_name = request.form.get("dataset_name", None) + ".csv"
 
         if Sample1 and Sample2 and dataset_name:
+            print("Sample 1"+Sample1)
+            print("Sample 2" + Sample2)
 
             df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
             heads= list(df.columns)
