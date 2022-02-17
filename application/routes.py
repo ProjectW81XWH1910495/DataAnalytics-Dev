@@ -276,16 +276,27 @@ def chart6():
             table = df.values.tolist()[:100]
             title = "Dataset Name:" + str(dataset_name)
             condition_variable_list = list(set(df[condition]))
-            hash_map = collections.defaultdict(list)
-            for item in condition_variable_list:
-                condition_table = df[df[condition] == item]
+            print(condition_variable_list)
+            print(len(condition_variable_list))
+            result_list = [[] for i in range(len(condition_variable_list))]
+            total = []
+            t,p = 0,0
+            for i in range(len(condition_variable_list)):
+                condition_table = df[df[condition] == condition_variable_list[i]]
                 contingency = pd.crosstab(index=condition_table[Sample1], columns=condition_table[Sample2])
                 chi_val, p_val, dof, expected = chi2_contingency(contingency, lambda_="log-likelihood", correction=False)
-                hash_map[item].append(chi_val)
-                hash_map[item].append(p_val)
 
-            print(hash_map)
-    return render_template('chi.html', dataset_name=dataset_name, table=table, hash_map = hash_map)
+                result_list[i].append(condition_variable_list[i])
+                result_list[i].append(chi_val)
+                t += chi_val
+                result_list[i].append(p_val)
+                p += p_val
+
+
+            print(result_list)
+            total.append(t)
+            total.append(p)
+    return render_template('chi.html',total = total, dataset_name=dataset_name, table=table, result = result_list)
 
 
 # @app.route('/upload', methods = ['POST','GET'])
