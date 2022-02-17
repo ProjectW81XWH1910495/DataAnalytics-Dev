@@ -8,6 +8,8 @@ import plotly.express as px
 import os
 from werkzeug.utils import secure_filename
 from scipy import stats
+from scipy.stats import chi2_contingency
+import collections
 
 
 @application.route('/')
@@ -234,10 +236,13 @@ def chart5():
             df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
             heads= list(df.columns)
             table = df.values.tolist()[:100]
-            print(heads)
-            print(table)
+            # print(heads)
+            # print(table)
+            print(df[Sample1])
+            print(df[Sample2])
             title = "Dataset Name:" + str(dataset_name)
             result = stats.wilcoxon(df[Sample1], df[Sample2])
+
             print(result)
     return render_template('wil.html', result=result, dataset_name=dataset_name, table=table, heads=heads)
 
@@ -247,7 +252,7 @@ def chart6():
     if request.method == "POST":
         Sample1 = request.form.get("Sample1", None)
         Sample2 = request.form.get("Sample2", None)
-
+        condition = request.form.get("Condition", None)
         if request.files:
             f = request.files['dataset']
             if str(secure_filename(f.filename)) != "":
@@ -269,14 +274,20 @@ def chart6():
             df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
             heads= list(df.columns)
             table = df.values.tolist()[:100]
-            # print(heads)
-            # print(table)
-            print(df[Sample1])
-            print(df[Sample2])
             title = "Dataset Name:" + str(dataset_name)
-            result = stats.chisquare(df[Sample1], df[Sample2])
-            print(result)
-    return render_template('chi.html', result=result, dataset_name=dataset_name, table=table, heads=heads)
+            condition_variable_list = list(set(df[condition]))
+            hash_map = collections.defaultdict(list)
+            for item in condition_variable_list:
+                condition_table = df[df[condition] == item]
+                contingency = pd.crosstab(index=condition_table[Sample1], columns=condition_table[Sample2])
+                chi_val, p_val, dof, expected = chi2_contingency(contingency, lambda_="log-likelihood", correction=False)
+                hash_map[item].append(chi_val)
+                hash_map[item].append(p_val)
+
+            print(hash_map)
+    return render_template('chi.html', dataset_name=dataset_name, table=table, hash_map = hash_map)
+
+
 # @app.route('/upload', methods = ['POST','GET'])
 # def upload():
 #     if request.method == 'POST':
