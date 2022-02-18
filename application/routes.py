@@ -303,8 +303,8 @@ def chart6():
 
 
             print(result_list)
-            total.append(t)
             total.append(p)
+            total.append(t)
     return render_template('chi.html',total = total, dataset_name=dataset_name, table=table, result = result_list)
 
 @application.route('/feature', methods=['POST','GET'])
