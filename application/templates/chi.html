@@ -18,25 +18,35 @@
                             <option value ="000">--Select please--</option>
                         {% endif %}
 
-                        <option value="ML_model_chiS_test">ML_model_chiS_test</option>
+                        <option value="COVID3_4Nodes">COVID3_4Nodes</option>
 
                     </select>
                     <label class="mr-sm-2" >Sample1:</label>
                      <select id="Sample1" name = "Sample1">
                          <option value ="000">--Select please--</option>
-                         <option value ="Sample1">Sample1</option>
+                         <option value ="ED_Visit">ED_Visit</option>
+                         <option value ="Dyspnea">Dyspnea</option>
+                         <option value ="COPD">COPD</option>
+                         <option value ="COVID">COVID</option>
+
                      </select>
 
                     <label class="mr-sm-2" >Sample2:</label>
                     <select id="Sample2" name = "Sample2">
                          <option value ="000">--Select please--</option>
-                         <option value ="Sample2">Sample2</option>
+                          <option value ="ED_Visit">ED_Visit</option>
+                         <option value ="Dyspnea">Dyspnea</option>
+                         <option value ="COPD">COPD</option>
+                         <option value ="COVID">COVID</option>
                      </select>
 
                     <label class="mr-sm-2" >Condition:</label>
                     <select id="Condition" name = "Condition">
                          <option value ="000">--Select please--</option>
-<!--                         <option value =""></option>-->
+                         <option value ="ED_Visit">ED_Visit</option>
+                         <option value ="Dyspnea">Dyspnea</option>
+                         <option value ="COPD">COPD</option>
+                         <option value ="COVID">COVID</option>
                      </select>
 
                         <input id= "submit" type="submit" class="btn btn-primary mt-1" value="Submit">
@@ -54,12 +64,6 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>Total</td>
-                            {% for i in total %}
-                            <td>{{i}}</td>
-                            {% endfor %}
-                          </tr>
                             {% for item in result %}
                             <tr>
                                 <td>{{ item[0] }}</td>
@@ -67,7 +71,14 @@
                                 <td>{{ item[1] }}</td>
                             </tr>
                             {% endfor %}
-
+                        <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            {% for i in total %}
+                            <td>{{i}}</td>
+                            {% endfor %}
+                          </tr>
+                        <tfoot>
                         </tbody>
 
                     </table>

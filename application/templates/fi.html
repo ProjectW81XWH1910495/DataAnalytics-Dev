@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="site-header-logo">
+        <h1 class="text-center">
+            Feature Importance
+        </h1>
+        <p>
+            The example below uses the statistical test for non-negative features to select k of the best features from the Dataset you uploded.
+            1. f_classif: ANOVA F-value between label/feature for classification tasks.
+            2. mutual_info_classif: Mutual information for a discrete target.
+            3. chi2: Chi-squared stats of non-negative features for classification tasks.
+        </p>
+    </div>
+
+    <div class="row p-4">
+        <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
+            <div class="card-body">
+                <form id="form1" action="/feature" method="POST" enctype="multipart/form-data">
+                    <label class="mr-sm-2">Datasetname:</label>
+                    <select id="dataset_name" name = "dataset_name">
+                        <option value ="000">--Select please--</option>
+                        <option value="15_year_smote_balancedataset">default_fi_dataset</option>
+
+                    </select>
+                    <label class="mr-sm-2" >Target:</label>
+                    <select id="target" name = "target">
+                        <option value ="000">--Select please--</option>
+                        <option value="distant_recurrence">distant_recurrence</option>
+
+                    </select>
+                    <label class="mr-sm-2" >Top k number:</label>
+                    <select id="k" name = "k">
+                        <option value ="000">--Select please--</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <label class="mr-sm-2" >Statistic Method:</label>
+                    <select id="smethod" name = "smethod">
+                        <option value ="000">--Select please--</option>
+                        <option value="f_classif">f_classif</option>
+                        <option value="mutual_info_classif">mutual_info_classif</option>
+                        <option value="chi2">chi2</option>
+                    </select>
+
+                    <div>
+                        <input type = "file" name = "dataset">
+                    </div>
+                    <div>
+                        <input  type="submit" class="btn btn-primary mt-1" value="Submit">
+                    </div>
+                </form>
+                <div id="feature"></div>
+                <p class="card-text">some explanations</p>
+                 <button type="button" id="update_label" class="btn btn-dark mt-2 mb-2" >Update Label</button>
+            </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- plotly CDN -->
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+         document.getElementById("update_label").addEventListener("click", function() {
+
+              var reader = new FileReader();
+              reader.addEventListener('load', function() {
+
+                var first_line_Arr = this.result.split('\n')[0].split(",");
+                console.log(first_line_Arr);
+                var target_select = document.getElementById("target");
+                  removeOptions(target_select);
+
+                for (var i=0;i<first_line_Arr.length;i++) {
+                    var yl = document.createElement("option");
+                    yl.textContent = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    yl.value = first_line_Arr[i].replace(/(\r\n|\n|\r)/gm, "");
+                    target_select.appendChild(yl);
+
+                }
+
+
+              });
+              reader.readAsText(document.getElementById('file').files[0]);
+
+            });
+            function removeOptions(selectElement) {
+               var i, L = selectElement.options.length - 1;
+               for(i = L; i >= 0; i--) {
+                  selectElement.remove(i);
+            }
+}
+        var graphs_fi = {{ graphJSON_fi | safe}};
+        Plotly.plot("feature", graphs_fi,{});
+        document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
+        document.getElementById('target').value = "<?php echo $_POST['x_label'];?>";
+        document.getElementById('k').value = "<?php echo $_POST['y_label'];?>";
+        document.getElementById('smethod').value = "<?php echo $_POST['thresholds'];?>";
+
+    </script>
+
+{% endblock %}

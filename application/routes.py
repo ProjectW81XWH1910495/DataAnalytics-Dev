@@ -10,12 +10,18 @@ from werkzeug.utils import secure_filename
 from scipy import stats
 from scipy.stats import chi2_contingency
 import collections
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import mutual_info_classif
+from functools import partial
+
+
 
 
 @application.route('/')
 def index():
     return render_template('scatter.html')
-
 @application.route('/trend')
 def trend():
     return render_template('trend.html')
@@ -34,6 +40,9 @@ def wil():
 @application.route('/chi')
 def chi():
     return render_template('chi.html')
+@application.route('/fi')
+def fi():
+    return render_template('fi.html')
 
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
@@ -297,6 +306,52 @@ def chart6():
             total.append(t)
             total.append(p)
     return render_template('chi.html',total = total, dataset_name=dataset_name, table=table, result = result_list)
+
+@application.route('/feature', methods=['POST','GET'])
+def feature():
+    if request.method == "POST":
+        target = request.form.get("target", None)
+        k = request.form.get("k", None)
+        smethod = request.form.get("smethod", None)
+        if request.files:
+            f = request.files['dataset']
+            if str(secure_filename(f.filename)) != "":
+                upload_path = "dataset/original" + str(secure_filename(f.filename))
+                f.save(upload_path)
+                dataset_name = str(secure_filename(f.filename))
+            else:
+                dataset_name = request.form.get("dataset_name", None) + ".csv"
+        if target and k and smethod and dataset_name:
+            df = pd.read_csv("dataset/original/" + str(dataset_name))
+            print(df)
+            y = df[target]
+            x = df.drop(target, 1)
+            print(k)
+            if smethod == "chi2":
+                bestfeatures = SelectKBest(score_func=chi2, k=int(k))
+            elif smethod == "f_classif":
+                bestfeatures = SelectKBest(score_func=f_classif, k=int(k))
+            else:
+                bestfeatures = SelectKBest(score_func=mutual_info_classif, k=int(k))
+
+
+            #bestfeatures = SelectKBest(score_func=partial(mutual_info_classif, random_state=0),k= int(k))
+            #
+            fit = bestfeatures.fit(x, y)
+            dfscores = pd.DataFrame(fit.scores_)
+            dfcolumns = pd.DataFrame(x.columns)
+            # concat two dataframes for better visualization
+            featureScores = pd.concat([dfcolumns, dfscores], axis=1)
+            featureScores.columns = ['Feature', 'Score']  # naming the dataframe columns
+            #print(featureScores.nlargest(10, 'Score'))
+            print(featureScores)
+
+            title = "Dataset Name:" + str(dataset_name)
+            fig_fi = px.bar(featureScores.nlargest(int(k), 'Score'), y='Score', x='Feature', text_auto='.2s',
+                         title="Feature Importance")
+            fig_fi.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
+            graphJSON_fi = json.dumps(fig_fi, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('fi.html', graphJSON_fi=graphJSON_fi)
 
 
 # @app.route('/upload', methods = ['POST','GET'])
