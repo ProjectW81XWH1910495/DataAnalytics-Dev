@@ -43,6 +43,9 @@ def chi():
 @application.route('/fi')
 def fi():
     return render_template('fi.html')
+@application.route('/he')
+def he():
+    return render_template('heatmap.html')
 
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
@@ -352,6 +355,41 @@ def feature():
             fig_fi.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
             graphJSON_fi = json.dumps(fig_fi, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('fi.html', graphJSON_fi=graphJSON_fi)
+
+@application.route('/heat', methods=['POST','GET'])
+def heat():
+        if request.method == "POST":
+            x_label = request.form.get("x_label", None)
+            y_label = request.form.get("y_label", None)
+            if request.files:
+                f = request.files['dataset']
+                if str(secure_filename(f.filename)) != "":
+                    upload_path = "dataset/retrieve/" + str(secure_filename(f.filename))
+                    f.save(upload_path)
+                    dataset_name = str(secure_filename(f.filename))
+                else:
+                    dataset_name = request.form.get("dataset_name", None)
+                    if ".csv" in dataset_name:
+                        dataset_name = dataset_name
+                    else:
+                        dataset_name = request.form.get("dataset_name", None) + ".csv"
+            # Graph Two
+            if x_label and y_label and dataset_name:
+                df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
+                title = "Dataset Name:" + str(dataset_name)
+                if y_label == "mean_test_auc and percent_auc_diff":
+                    fig1 = px.line(x=df[x_label], y=df["mean_test_auc"], title=title, labels=dict(x=x_label, y="mean_test_auc"))
+                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                    fig2 = px.line(x=df[x_label], y=df["percent_auc_diff"], title=title, labels=dict(x=x_label, y="percent_auc_diff"))
+                    graph2JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                else:
+                    fig1 = px.line(x=df[x_label], y=df[y_label], title=title,
+                                   labels=dict(x=x_label, y=y_label))
+                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+                    graph2JSON = "None"
+
+        #os.remove("dataset/retrieve/" + str(dataset_name))
+        return render_template('heat_map.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON,dataset_name = dataset_name)
 
 
 # @app.route('/upload', methods = ['POST','GET'])

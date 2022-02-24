@@ -63,6 +63,7 @@
             </div>
             </div>
         </div>
+                <div id="graphJSON_fi">{{ graphJSON_fi|safe}}</div>
 
     </div>
     <!-- plotly CDN -->
@@ -70,7 +71,6 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript">
          document.getElementById("update_label").addEventListener("click", function() {
-
               var reader = new FileReader();
               reader.addEventListener('load', function() {
 
@@ -98,7 +98,8 @@
                   selectElement.remove(i);
             }
 }
-        var graphs_fi = {{ graphJSON_fi | safe}};
+        var graphs_fi = {{ graphJSON_fi|safe}};
+         //graphs_fi =JSON.parse(document.getElementById('graphJSON_fi'))
         Plotly.plot("feature", graphs_fi,{});
         document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
         document.getElementById('target').value = "<?php echo $_POST['x_label'];?>";
