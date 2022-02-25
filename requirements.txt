@@ -27,4 +27,4 @@ typing==3.7.4.3
 Werkzeug==2.0.1
 wincertstore==0.2
 sklearn
-sharp
+shap
