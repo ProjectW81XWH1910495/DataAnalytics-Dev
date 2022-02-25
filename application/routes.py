@@ -5,16 +5,20 @@ import numpy as np
 import json
 import plotly
 import plotly.express as px
+import matplotlib.pyplot as plt
 import os
 from werkzeug.utils import secure_filename
 from scipy import stats
 from scipy.stats import chi2_contingency
 import collections
+import sklearn.model_selection as model_selection
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif
 from functools import partial
+import shap
+from sklearn.ensemble import RandomForestClassifier
 
 
 
@@ -43,6 +47,9 @@ def chi():
 @application.route('/fi')
 def fi():
     return render_template('fi.html')
+@application.route('/feabar')
+def feabar():
+    return render_template('feabar.html')
 @application.route('/he')
 def he():
     return render_template('heatmap.html')
@@ -356,6 +363,37 @@ def feature():
             fig_fi.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
             graphJSON_fi = json.dumps(fig_fi, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('fi.html', graphJSON_fi=graphJSON_fi)
+@application.route('/featurebar', methods=['POST','GET'])
+def featurebar():
+    if request.method == "POST":
+        target = request.form.get("target", None)
+        if request.files:
+            f = request.files['dataset']
+            if str(secure_filename(f.filename)) != "":
+                upload_path = "dataset/original" + str(secure_filename(f.filename))
+                f.save(upload_path)
+                dataset_name = str(secure_filename(f.filename))
+            else:
+                dataset_name = request.form.get("dataset_name", None) + ".csv"
+        if target and dataset_name:
+            df = pd.read_csv("dataset/original/" + str(dataset_name))
+            print(df)
+            y = df[target]
+            X = df.drop(target, 1)
+            X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0)
+            cls = RandomForestClassifier(max_depth=7, random_state=0)
+            cls.fit(X_train, y_train)
+            # compute SHAP values
+            explainer = shap.TreeExplainer(cls)
+            shap_values = explainer.shap_values(X)
+            class_names = [0,1]
+            fig_fi = shap.summary_plot(shap_values, X.values, plot_type="bar", class_names=class_names, feature_names=X.columns, show=False)
+            name = "feature_bar.png"
+            script_dir = os.path.dirname(__file__)
+            results_dir = os.path.join(script_dir, "static/")
+            plt.savefig(results_dir + name)
+
+    return render_template('feabar.html', name=name)
 # heatmap
 @application.route('/heat', methods=['POST','GET'])
 def heat():
@@ -363,7 +401,7 @@ def heat():
             if request.files:
                 f = request.files['dataset']
                 if str(secure_filename(f.filename)) != "":
-                    upload_path = "dataset/retrieve/" + str(secure_filename(f.filename))
+                    upload_path = "dataset/original/" + str(secure_filename(f.filename))
                     f.save(upload_path)
                     dataset_name = str(secure_filename(f.filename))
                 else:
@@ -373,7 +411,7 @@ def heat():
                     else:
                         dataset_name = request.form.get("dataset_name", None) + ".csv"
             if dataset_name:
-                df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
+                df = pd.read_csv("dataset/original/" + str(dataset_name))
                 title = "Dataset Name:" + str(dataset_name)
                 #print(df.corr())
                 heatmap_data = df.corr()

@@ -12,11 +12,7 @@
                 <form id="form1" action="/heat" method="POST" enctype="multipart/form-data">
                     <label class="mr-sm-2" >Datasetname:</label>
                     <select id="dataset_name" name = "dataset_name">
-                        {% if dataset_name %}
-                            <option value = {{ dataset_name }}>{{ dataset_name }}</option>
-                        {% else %}
-                            <option value ="000">--Select please--</option>
-                        {% endif %}
+                        <option value ="000">--Select please--</option>
                         <option value="15_year_smote_balancedataset">15_year_smote_balancedataset</option>
 
                     </select>
