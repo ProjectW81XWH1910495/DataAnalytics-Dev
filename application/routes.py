@@ -12,6 +12,7 @@ from scipy import stats
 from scipy.stats import chi2_contingency
 import collections
 import sklearn.model_selection as model_selection
+from sklearn.metrics import plot_confusion_matrix
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from sklearn.feature_selection import f_classif
@@ -386,14 +387,21 @@ def featurebar():
             # compute SHAP values
             explainer = shap.TreeExplainer(cls)
             shap_values = explainer.shap_values(X)
-            class_names = [0,1]
-            fig_fi = shap.summary_plot(shap_values, X.values, plot_type="bar", class_names=class_names, feature_names=X.columns, show=False)
-            name = "feature_bar.png"
+            class_names = list(set(list(y)))
+            print(class_names)
             script_dir = os.path.dirname(__file__)
             results_dir = os.path.join(script_dir, "static/")
-            plt.savefig(results_dir + name)
+            con = plot_confusion_matrix(cls, X_test, y_test, display_labels=class_names, cmap=plt.cm.Blues, xticks_rotation='vertical')
+            conmatrix = "confusion_matrix.png"
+            plt.savefig(results_dir + conmatrix)
+            plt.clf()
+            fig_fi = shap.summary_plot(shap_values, X.values, plot_type="bar", class_names=class_names, feature_names=X.columns, show=False)
+            featurebar = "feature_bar.png"
+            plt.savefig(results_dir + featurebar)
 
-    return render_template('feabar.html', name=name)
+
+
+    return render_template('feabar.html', featurebar = featurebar, conmatrix = conmatrix)
 # heatmap
 @application.route('/heat', methods=['POST','GET'])
 def heat():

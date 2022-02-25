@@ -34,8 +34,9 @@
                 <p class="card-text">some explanations</p>
                  <button type="button" id="update_label" class="btn btn-dark mt-2 mb-2" >Update Label</button>
             </div>
-                {% if name %}
-                 <div><img class="center" alt="feature importance bar", src="{{url_for('static', filename= name)}}"></div>
+                {% if featurebar or conmatrix %}
+                 <div><img class="center" alt="confusion matrix", src="{{url_for('static', filename= conmatrix)}}"></div>
+                 <div><img class="center" alt="feature importance bar", src="{{url_for('static', filename = featurebar)}}"></div>
                 {% endif %}
         </div>
         </div>
