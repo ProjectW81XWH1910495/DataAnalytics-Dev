@@ -46,7 +46,7 @@ def fi():
 @application.route('/he')
 def he():
     return render_template('heatmap.html')
-
+# scatter
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
     graphJSON = {}
@@ -94,7 +94,7 @@ def chart1():
                 graph2JSON = "undefined"
         #os.remove("dataset/retrieve/" + str(dataset_name))
     return render_template('scatter.html', graph1JSON=graph1JSON, graph2JSON=graph2JSON, dataset_name = dataset_name, table = table, heads= heads)
-
+# trend
 @application.route('/chart2', methods=['POST','GET'])
 def chart2():
         if request.method == "POST":
@@ -129,7 +129,7 @@ def chart2():
 
         #os.remove("dataset/retrieve/" + str(dataset_name))
         return render_template('trend.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON,dataset_name = dataset_name)
-
+# 3d scatter
 @application.route('/chart3', methods=['POST','GET'])
 def chart3():
         if request.method == "POST":
@@ -164,6 +164,7 @@ def chart3():
                     graph2JSON = "None"
             #os.remove("dataset/retrieve/" + str(dataset_name))
         return render_template('threeD.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON, dataset_name = dataset_name)
+# ROC
 @application.route('/chart4', methods=['POST','GET'])
 def chart4():
         if request.method == "POST":
@@ -219,7 +220,7 @@ def chart4():
                 fig4 = px.line(x=fpr, y=tpr,title=title, labels=dict(x=x_label, y=y_label))
                 graph4JSON = json.dumps(fig4, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('auc.html', graph4JSON=graph4JSON)
-
+# wil
 @application.route('/chart5', methods=['POST','GET'])
 def chart5():
     graphJSON = {}
@@ -257,7 +258,7 @@ def chart5():
 
             print(result)
     return render_template('wil.html', result=result, dataset_name=dataset_name, table=table, heads=heads)
-
+# conditional chi-squared
 @application.route('/chart6', methods=['POST','GET'])
 def chart6():
     graphJSON = {}
@@ -309,7 +310,7 @@ def chart6():
             total.append(p)
             total.append(t)
     return render_template('chi.html',total = total, dataset_name=dataset_name, table=table, result = result_list)
-
+# feature importance
 @application.route('/feature', methods=['POST','GET'])
 def feature():
     if request.method == "POST":
@@ -355,12 +356,10 @@ def feature():
             fig_fi.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
             graphJSON_fi = json.dumps(fig_fi, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('fi.html', graphJSON_fi=graphJSON_fi)
-
+# heatmap
 @application.route('/heat', methods=['POST','GET'])
 def heat():
         if request.method == "POST":
-            x_label = request.form.get("x_label", None)
-            y_label = request.form.get("y_label", None)
             if request.files:
                 f = request.files['dataset']
                 if str(secure_filename(f.filename)) != "":
@@ -373,23 +372,17 @@ def heat():
                         dataset_name = dataset_name
                     else:
                         dataset_name = request.form.get("dataset_name", None) + ".csv"
-            # Graph Two
-            if x_label and y_label and dataset_name:
+            if dataset_name:
                 df = pd.read_csv("dataset/retrieve/" + str(dataset_name))
                 title = "Dataset Name:" + str(dataset_name)
-                if y_label == "mean_test_auc and percent_auc_diff":
-                    fig1 = px.line(x=df[x_label], y=df["mean_test_auc"], title=title, labels=dict(x=x_label, y="mean_test_auc"))
-                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
-                    fig2 = px.line(x=df[x_label], y=df["percent_auc_diff"], title=title, labels=dict(x=x_label, y="percent_auc_diff"))
-                    graph2JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
-                else:
-                    fig1 = px.line(x=df[x_label], y=df[y_label], title=title,
-                                   labels=dict(x=x_label, y=y_label))
-                    graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
-                    graph2JSON = "None"
+                #print(df.corr())
+                heatmap_data = df.corr()
+                fig1 = px.imshow(heatmap_data, text_auto=True, color_continuous_scale='RdBu_r')
+                graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+
 
         #os.remove("dataset/retrieve/" + str(dataset_name))
-        return render_template('heat_map.html', graph1JSON=graph1JSON,graph2JSON=graph2JSON,dataset_name = dataset_name)
+        return render_template('heatmap.html', graph1JSON=graph1JSON,dataset_name = dataset_name)
 
 
 # @app.route('/upload', methods = ['POST','GET'])

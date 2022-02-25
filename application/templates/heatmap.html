@@ -17,83 +17,50 @@
                         {% else %}
                             <option value ="000">--Select please--</option>
                         {% endif %}
-                        <option value ="000">--Select please--</option>
-                        <option value="5I240_learningrate_s1_retrieve">5I240_learningrate_s1_retrieve</option>
-                        <option value="5I240_learningrate_s2_retrieve">5I240_learningrate_s2_retrieve</option>
-                        <option value="5I240_learningrate_s3_retrieve">5I240_learningrate_s3_retrieve</option>
-                        <option value="5I240_learningrate_s4_retrieve">5I240_learningrate_s4_retrieve</option>
-                        <option value="5I240_h4_merged_s1_retrieve">5I240_h4_merged_s1_retrieve</option>
-                        <option value="5I240_h4_merged_s2_retrieve">5I240_h4_merged_s2_retrieve</option>
-                        <option value="5I240_h4_merged_s3_retrieve">5I240_h4_merged_s3_retrieve</option>
-                        <option value="5I240_h4_merged_s4_retrieve">5I240_h4_merged_s4_retrieve</option>
-                        <option value="10I240_h4_merged_s1_retrieve">10I240_h4_merged_s1_retrieve</option>
-                        <option value="10I240_h4_merged_s2_retrieve">10I240_h4_merged_s2_retrieve</option>
-                        <option value="10I240_h4_merged_s3_retrieve">10I240_h4_merged_s3_retrieve</option>
-                        <option value="10I240_h4_merged_s4_retrieve">10I240_h4_merged_s4_retrieve</option>
-                        <option value="15I240_h4_merged_s1_retrieve">15I240_h4_merged_s1_retrieve</option>
-                        <option value="15I240_h4_merged_s2_retrieve">15I240_h4_merged_s2_retrieve</option>
-                        <option value="15I240_h4_merged_s3_retrieve">15I240_h4_merged_s3_retrieve</option>
-                        <option value="15I240_h4_merged_s4_retrieve">15I240_h4_merged_s4_retrieve</option>
+                        <option value="15_year_smote_balancedataset">15_year_smote_balancedataset</option>
+
                     </select>
 
-                    <label class="mr-sm-2" >X:</label>
-                    <select id="x_label" name = "x_label" >
-                        <option value ="000">--Select please--</option>
-                        <option value="1">node number in hidden layer 1</option>
-                        <option value="2">node number in hidden layer 2</option>
-                        <option value="3">node number in hidden layer 3</option>
-                        <option value="4">node number in hidden layer 4</option>
-                        <option value="L1">L1</option>
-                        <option value="L2">L2</option>
-                        <option value="dec">dec</option>
-                        <option value="drate">drate</option>
-                        <option value="lrate">lrate</option>
-                        <option value="momen">momen</option>
-                        <option value="layer_number">layer_number</option>
-                        <option value="batch_size">batch_size</option>
-                        <option value="epochs">epochs</option>
-                    </select>
-                    <label class="mr-sm-2" >Y:</label>
-                    <select id="y_label" name = "y_label" >
-                         <option value ="000">--Select please--</option>
-                        <option value ="000">--Select please--</option>
-                        <option value="mean_test_auc">mean_test_auc</option>
-                        <option value="mean_train_auc">mean_train_auc</option>
-                        <option value="percent_auc_diff">percent_auc_diff</option>
-                        <option value="mean_test_auc and percent_auc_diff">mean_test_auc and percent_auc_diff</option>
-                    </select>
-                        <input id= "submit" type="submit" class="btn btn-primary mt-1" value="Submit">
-                        <input id="file" type="file" name="dataset">
+<!--                    <label class="mr-sm-2" >X:</label>-->
+<!--                    <select id="x_label" name = "x_label" >-->
+<!--                        <option value ="000">&#45;&#45;Select please&#45;&#45;</option>-->
+<!--                    </select>-->
+
+<!--                    <label class="mr-sm-2" >Y:</label>-->
+<!--                    <select id="y_label" name = "y_label" >-->
+<!--                         <option value ="000">&#45;&#45;Select please&#45;&#45;</option>-->
+<!--                    </select>-->
+
+
+                     <input id="file" type="file" name="dataset">
+                     <input id= "submit" type="submit" class="btn btn-primary mt-1" value="Submit">
                 </form>
-                <button type="button" id="update_label" class="btn btn-dark mt-2 mb-2" >Update Label</button>
-                <button type="button" id="show_table" class="btn btn-dark mt-2 mb-2" >Show Table</button>
-                <div id="hidden_table" style="display:none">
-                    <table id="data" class="table table-striped" >
-                        <thead>
-                          <tr>
-                            {% for head in heads %}
-                                <th>{{ head }}</th>
-                            {% endfor %}
-                          </tr>
-                        </thead>
-                        <tfoot>
-                            <tr>
-                                <td></td>
-                            </tr>
-	                    </tfoot>
-                        <tbody>
-                          {% for row in table %}
-                            <tr>
-                                {% for item in row %}
-                                    <td>{{ item }}</td>
-                                {% endfor %}
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+<!--                <div id="hidden_table" style="display:none">-->
+<!--                    <table id="data" class="table table-striped" >-->
+<!--                        <thead>-->
+<!--                          <tr>-->
+<!--                            {% for head in heads %}-->
+<!--                                <th>{{ head }}</th>-->
+<!--                            {% endfor %}-->
+<!--                          </tr>-->
+<!--                        </thead>-->
+<!--                        <tfoot>-->
+<!--                            <tr>-->
+<!--                                <td></td>-->
+<!--                            </tr>-->
+<!--	                    </tfoot>-->
+<!--                        <tbody>-->
+<!--                          {% for row in table %}-->
+<!--                            <tr>-->
+<!--                                {% for item in row %}-->
+<!--                                    <td>{{ item }}</td>-->
+<!--                                {% endfor %}-->
+<!--                            </tr>-->
+<!--                          {% endfor %}-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
                     <div id="chart1"></div>
-                    <div id="chart2"></div>
                 </div>
             </div>
         </div>
@@ -108,14 +75,11 @@
             var graphs1 = {{ graph1JSON | safe }};
             Plotly.plot("chart1", graphs1,{})
 
-            var graphs2 = [];
-            var graphs2 = {{ graph2JSON | safe}};
-            if (graphs2 != undefined){
-            Plotly.plot("chart2", graphs2,{})}
+            // var graphs2 = [];
+            // var graphs2 = {{ graph2JSON | safe}};
+            // if (graphs2 != undefined){
+            // Plotly.plot("chart2", graphs2,{})}
 
-        //document.getElementById('dataset_name').value = "<?php echo $_POST['dataset_name'];?>";
-        document.getElementById('x_label').value = "<?php echo $_POST['x_label'];?>";
-        document.getElementById('y_label').value = "<?php echo $_POST['y_label'];?>";
 
         document.getElementById("show_table").addEventListener('click', function(){
             var hidden_table = document.getElementById("hidden_table")
