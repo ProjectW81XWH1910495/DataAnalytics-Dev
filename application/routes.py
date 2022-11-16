@@ -1,5 +1,5 @@
 from application import application
-from flask import render_template, request, url_for, redirect
+from flask import render_template, request, url_for, redirect, send_file
 import pandas as pd
 import numpy as np
 import json
@@ -19,14 +19,15 @@ from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif
 from functools import partial
 import shap
+from retrieve_columns import expand_parameters_stored_in_one_column
+from retrieve_columns import read_file,retrieve_target_columns_based_on_values
+from retrieve_columns import find_columns_to_be_expanded, find_available_filters
 from sklearn.ensemble import RandomForestClassifier
-
-
-
+from collections import defaultdict
 
 @application.route('/')
 def index():
-    return render_template('scatter.html')
+    return render_template('index.html')
 @application.route('/trend')
 def trend():
     return render_template('trend.html')
@@ -54,6 +55,10 @@ def feabar():
 @application.route('/he')
 def he():
     return render_template('heatmap.html')
+
+@application.route('/download/<path:data_path>')
+def download(data_path):
+    return send_file("../"+data_path, as_attachment=True)
 # scatter
 @application.route('/chart1', methods=['POST','GET'])
 def chart1():
@@ -430,6 +435,137 @@ def heat():
         #os.remove("dataset/retrieve/" + str(dataset_name))
         return render_template('heatmap.html', graph1JSON=graph1JSON,dataset_name = dataset_name)
 
+
+@application.route('/upload_dataset', methods =['POST','GET'])
+def upload_dataset():
+    file_dir = "dataset/"
+    files = os.listdir(file_dir)
+    if request.method == "POST":
+        print(1)
+        if request.files:
+            f = request.files['dataset']
+            if str(secure_filename(f.filename)) != "":
+                data_path = 'dataset/' + secure_filename(f.filename)
+                f.save(data_path)
+                print('file uploaded successfully')
+                dataset_name= f.filename
+                data = read_file(data_path)
+            else:
+                dataset_name = request.form.get("dataset_name", None)
+                data_path = 'dataset/' + str(dataset_name)
+                data = read_file(data_path)
+                print('show!!!')
+            return render_template('upload_dataset.html', data=data.head(100), heads=data.columns, data_path = data_path, files = files)
+
+        return redirect(url_for('retrieve_columns'),expand=expand)
+    return render_template('upload_dataset.html', data=None, files=files)
+
+@application.route('/expand_data/', methods=['POST','GET'])
+def expand_data():
+    if request.method == "POST":
+        data_path = request.form.get('data_path_1', None)
+        check_columns = request.form.getlist('checkbox', None)
+        data_path2 = request.form.get('data_path_2', None)
+        print('1',data_path)
+        if data_path:
+            data = read_file(data_path)
+            candidate_columns = find_columns_to_be_expanded(data)
+            print(candidate_columns)
+            if not candidate_columns:
+                return render_template('retrieve_columns.html')
+            else:
+                return render_template('expand_data.html',data=data, data_path = data_path, candidate_columns = candidate_columns,new_data=None)
+
+        if check_columns:
+            old_df = read_file(data_path2)
+            heads = old_df.columns
+            new_df, sub_parameters = expand_parameters_stored_in_one_column(data_path2, check_columns)
+
+            data_path_expand = data_path2[:-4] +'_expand'+data_path2[-4:]
+
+            new_df.to_csv(data_path_expand,index=False)
+            print(new_df.head())
+            return render_template('expand_data.html', new_data=new_df, data_path = data_path_expand, heads = heads,sub_parameters=sub_parameters)
+
+
+
+
+    print('aaaaaa')
+    return render_template('retrieve_columns.html')
+
+@application.route('/show_table/<path:data_path>/',methods=['POST','GET'])
+def show_table(data_path):
+    data = read_file(data_path)
+    print(data.head())
+
+@application.route('/retrieve_columns/<path:data_path>/', methods = ['POST','GET'])
+def retrieve_columns(data_path):
+    data = read_file(data_path)
+    print(data.head())
+    diversity_columns, continuous_columns = find_available_filters(data)
+    diversity_filters, continuous_filters = {}, defaultdict(list)
+    retrieved = False
+    if request.method == 'POST':
+
+        #diversity_filters = request.form.getlist('diversity_filters')
+
+        for column in diversity_columns:
+            if request.form.get(f"diversity_filters_{column}"):
+                retrieved = True
+                diversity_filters[column] = request.form.getlist(f"diversity_filters_{column}", None)
+                if 'any' in diversity_filters[column]:
+                    del diversity_filters[column]
+        for column in continuous_columns:
+            if request.form.get(f"continuous_filters_minimum_{column}"):
+                retrieved = True
+                continuous_filters[column].append(float(request.form.get(f"continuous_filters_minimum_{column}")))
+                continuous_filters[column].append(float(request.form.get(f"continuous_filters_maximum_{column}")))
+        print(diversity_filters,'diversity_filters')
+        print(continuous_filters,'continuous_filters')
+        return_columns = request.form.getlist('check_return_columns', None)  # return columns
+        print('all',return_columns)
+        if return_columns: retrieved = True
+        if retrieved:
+            output_path = data_path[:-4] +'_retrieve'+data_path[-4:]
+            unique = False
+            expand = False
+            new_df = retrieve_target_columns_based_on_values(data_path, requirements=diversity_filters, range_requirements=continuous_filters,
+                                                    target_columns=return_columns,output_path=output_path, unique=unique, expand=expand)
+
+            print('retrieve succesfully!')
+            return render_template('retrieve_columns.html', data_path = output_path, data = new_df, df_length=len(new_df), all_columns = new_df.columns,
+                                        diversity_filters=diversity_filters, continuous_filters=continuous_filters,new_df=new_df)
+
+    all_columns = list(data.columns)
+    return render_template('retrieve_columns.html',data_path = data_path, data = data,df_length=len(data),
+                           all_columns = data.columns, i = 0,
+                           diversity_columns = diversity_columns, continuous_columns=continuous_columns, new_df = None)
+
+# def retrieve_columns():
+#     data = None
+#     target_columns = []
+#     download_path = ""
+#     if request.method == "POST":
+#         if request.files:
+#             f = request.files['dataset']
+#             f.save('dataset/' + secure_filename(f.filename))
+#             print('file uploaded successfully')
+#             dataset_name = f.filename
+#             data = read_file('dataset/' + dataset_name)
+#             download_path='dataset/' +dataset_name
+#             target_columns = data.columns
+#         else:
+#             dataset_name = request.form.get("datasets", None)
+#             print(dataset_name)
+#             if dataset_name:
+#                 data = read_file('dataset/'+dataset_name)
+#                 print(data.head())
+#                 data, target_columns_2 = expand_parameters_stored_in_one_column('dataset/'+dataset_name, data.columns)
+#                 download_path = '././dataset/' + dataset_name + "_new"
+#                 print('show!!!')
+#
+#         return render_template('retrieve_columns.html', download_path = download_path, dataset_name = dataset_name, data = data.head(50), target_columns = data.columns)
+#     return render_template('retrieve_columns.html', data=data, target_columns = target_columns)
 
 # @app.route('/upload', methods = ['POST','GET'])
 # def upload():

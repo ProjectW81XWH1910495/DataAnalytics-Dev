@@ -10,16 +10,119 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{url_for('static', filename = 'main.css')}}" type="text/css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+<style type="text/css">
+    table { page-break-inside:auto }
+    tr    { page-break-inside:avoid; page-break-after:auto }
+    thead { display:table-header-group }
+    tfoot { display:table-footer-group }
+</style>
 
+    <style rel="stylesheet/scss" lang="scss" scoped>
+    .dashboard-editor-container {
+        padding: 15px;
+        background-color: rgb(240, 242, 245);
+
+        overflow-y: auto;
+        height: 672px;
+
+        .chart-wrapper {
+            background: #fff;
+            padding: 16px 16px 0;
+            margin-bottom: 32px;
+        }
+    }
+</style>
 
     {% if title %}
         <title>DataVisualization-{{title}}</title>
     {% else %}
         <title>DataVisualization</title>
     {% endif %}
+<script type="text/javascript">
+            function selects(){
+                var ele=document.getElementsByName('chk');
+                for(var i=0; i<ele.length; i++){
+                    if(ele[i].type=='checkbox')
+                        ele[i].checked=true;
+                }
+            }
+            function deSelect(){
+                var ele=document.getElementsByName('chk');
+                for(var i=0; i<ele.length; i++){
+                    if(ele[i].type=='checkbox')
+                        ele[i].checked=false;
 
+                }
+            }
+        </script>
 </head>
-<body>
+<section id="navbar">
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #2F8F9D;">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="#" style="color: #8CC0DE;"><b>Data Charts</b></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+              <form class="navbar-right">
+            <div class="collapse navbar-collapse navbar-right" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!--<li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#" style="color: #82DBD8;">Home</a>
+                </li>-->
+                  <li class="nav-item dropdown">
+                    <a class="nav-link nav-link-book dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #8CC0DE;">
+                        Result Analysis
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item " href="retrieve_columns">Retrieve subsets</a></li>
+                        <li><a class="dropdown-item" href="#">Merge file</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Time analysis</a></li>
+                        <li><a class="dropdown-item" href="#">Summary statistics</a></li>
+                        <li><a class="dropdown-item" href="trend">Trend analysis</a></li>
+                        <li><a class="dropdown-item" href="#">Retrieve top n models</a></li>
+                        <li><a class="dropdown-item" href="#">Plot roc curves</a></li>
+                        <li><a class="dropdown-item" href="#">Feature importance analysis</a></li>
+                        <li><a class="dropdown-item" href="#">Box plot</a></li>
+                        <li><a class="dropdown-item" href="#">Other plots</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #8CC0DE;">
+                    Preprocessing
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="upload_dataset">Load dataset</a></li>
+                      <!--<li><hr class="dropdown-divider"></li>-->
+                      <li><a class="dropdown-item" href="#">Resample dataset</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #8CC0DE;">
+                        Models
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Form layers</a></li>
+                        <li><a class="dropdown-item" href="#">Train and save model</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Predict and plot roc curve</a></li>
+                    </ul>
+                </li>
+
+              </ul>
+            </div>
+              </form>
+
+          </div>
+        </nav>
+    </section>
+
+<body >
+    <div class="dashboard-editor-container">
+
+
+
+    <!--
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">ProjectW81XWH1910495</a>
@@ -41,9 +144,11 @@
                         <a href="/fi">Feature importance</a>
                         <a href="/feabar">Feature importance based on classification</a>
                         <a href="/he">Heat Map</a>
+                      <a href="upload_dataset">Upload dataset</a>
+                      <a href="/retrieve_columns">Retrieve_columns</a>
 
                   </div>
-                </div>
+                </div> -->
 <!--                <ul class="navbar-nav ml-auto mb-2 mb-lg-0 ">-->
 <!--                    <li class="nav-item">-->
 <!--                        <a class="nav-link text-white" href="/scatter">Scatter plot</a>-->
@@ -65,10 +170,10 @@
 <!--                        <a class="nav-link text-white" href="/chi">Chi-Squared Test</a>-->
 <!--                    </li>-->
 <!--                </ul>-->
-            </div>
+     <!--       </div>
         </div>
     </nav>
-
+-->
       <main>
           <div class="container">
               <div class="row">
@@ -136,8 +241,7 @@
               <!-- Grid container -->
 
         </footer>
-
-
-
+    </div>
 </body>
+
 </html>

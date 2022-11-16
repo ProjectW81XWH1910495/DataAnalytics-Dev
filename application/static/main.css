@@ -36,7 +36,7 @@
 }
 
 .site-header-logo h1 {
-  color: rgb(39, 147, 248);
+  color: rgb(47, 143, 157);
   font-family: lobsterregular;
   font-size: 3rem;
   margin-top: 2rem;
@@ -54,7 +54,7 @@ tfoot td {
   bottom: 0;
   width: 100%;
   text-align: center;
-  height:10%
+  height:10%;
 }
 
 .dropbtn {
@@ -76,7 +76,7 @@ tfoot td {
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f9f9f9;
+  background-color: #B3E8E5;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
@@ -120,3 +120,7 @@ tfoot td {
   margin-right: auto;
   width: 50%;
 }
+
+.submit_button{
+background-color:#2F8F9D;
+border:none;}
