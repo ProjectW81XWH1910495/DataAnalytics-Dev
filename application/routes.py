@@ -1,5 +1,5 @@
 from application import application
-from flask import render_template, request, url_for, redirect, send_file
+from flask import render_template, request, url_for, redirect, send_file, flash
 import pandas as pd
 import numpy as np
 import json
@@ -24,6 +24,8 @@ from retrieve_columns import read_file,retrieve_target_columns_based_on_values
 from retrieve_columns import find_columns_to_be_expanded, find_available_filters
 from sklearn.ensemble import RandomForestClassifier
 from collections import defaultdict
+
+
 
 @application.route('/')
 def index():
@@ -440,8 +442,8 @@ def heat():
 def upload_dataset():
     file_dir = "dataset/"
     files = os.listdir(file_dir)
+    data, data_path, head = None, None, None
     if request.method == "POST":
-        print(1)
         if request.files:
             f = request.files['dataset']
             if str(secure_filename(f.filename)) != "":
@@ -450,14 +452,31 @@ def upload_dataset():
                 print('file uploaded successfully')
                 dataset_name= f.filename
                 data = read_file(data_path)
+            if not data_path:
+                flash("please upload a dataset in suitable format('.csv .xlsx .txt')")
+                return render_template('upload_dataset.html',data=None, files=files)
             else:
-                dataset_name = request.form.get("dataset_name", None)
-                data_path = 'dataset/' + str(dataset_name)
-                data = read_file(data_path)
-                print('show!!!')
-            return render_template('upload_dataset.html', data=data.head(100), heads=data.columns, data_path = data_path, files = files)
+                file_size = os.path.getsize(data_path)
+                if file_size >= 5000000:
+                    flash(f"the maximum file size limit is 500M! Your file is {file_size/1000000}M! Please upload another dataset")
+                    return render_template('upload_dataset.html', data=None, files=files)
+        else:
+            print('existing dataset')
+            dataset_name = request.form.get("dataset_name", None)
+            data_path = 'dataset/' + str(dataset_name)
+            data = read_file(data_path)
+            print('show!!!')
+            if not data_path:
+                flash("the dataset you chose is not in a suitable format('.csv .xlsx .txt')")
+                return render_template('upload_dataset.html',data=None, files=files)
+            else:
+                file_size = os.path.getsize(data_path)
+                if file_size >= 300000000:
+                    flash(
+                        f"the maximum file size limit is 500M! Your file is {file_size / 1000000}M! Please upload another dataset")
+                    return render_template('upload_dataset.html', data=None, files=files)
+        return render_template('upload_dataset.html', data=data.head(100), heads=data.columns, data_path = data_path, files = files)
 
-        return redirect(url_for('retrieve_columns'),expand=expand)
     return render_template('upload_dataset.html', data=None, files=files)
 
 @application.route('/expand_data/', methods=['POST','GET'])

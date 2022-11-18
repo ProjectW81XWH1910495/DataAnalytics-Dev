@@ -9,13 +9,17 @@
     <div class="row p-4">
         <div class="card m-auto" style="width: 90%;" data-aos="fade-left">
             <div class="card-body">
-                <form id = 'form_load_data' action ="{{url_for('upload_dataset')}}" method="POST" enctype="multipart/form-data" class ='form center'>
+                {% if data is none %}
+                <form name ='form_load_data' id = 'form_load_data' action ="{{url_for('upload_dataset')}}" method="POST"
+                      enctype="multipart/form-data" class ='form center' >
                     <label class="mr-sm-2" >Upload your own dataset</label>
-                    <input id="file" type="file" name="dataset">
+                    <input id="upload_local_dataset" type="file" name="dataset" onclick="makeserverDisable();"
+                    accept=".csv, .excel, .xlsx">
                     <br>
-                    <label class="mr-sm-2">Or you could choose from existing datasets instead of uploading new one:</label>
+                    <label class="mr-sm-2">Or you could choose from existing datasets instead of uploading new one:
+                    </label>
                     <br>
-                    <select id="dataset_name" name = "dataset_name">
+                    <select id="upload_server_dataset" name = "dataset_name" onclick="makelocalDisable();">
                         <option value ="000">--Select from existing datasets --</option>
                         {% if files %}
                         {% for file in files %}
@@ -23,10 +27,14 @@
                         {% endfor %}
                         {% endif %}
                         <option value="15_year_smote_balancedataset.csv">15_year_smote_balancedataset.csv<option>
-                    </select>
-                    <input id= "submit1" type="submit" class="btn btn-primary mt-1 submit_button" value="Submit">
+                    </select><br>
+                    <input id= "submit1" type="submit" class="btn btn-primary mt-1 submit_button"
+                           value="Submit" οnclick="submitbtn();">
+                    <input id ="reset1" type="reset" class="btn btn-primary mt-1 submit_button" value="Reset" name="reset1" onclick="makelocalEnable();makeserverEnable()">
                 </form>
+                {% endif %}
                 {% if data is not none %}
+
                 <label class ="mr-sm-2">upload succesfully!</label>
                 <label>{{data_path}}</label>
                 <button type="button" id="show_table" class="btn btn-dark mt-2 mb-2 submit_button" >Show Table</button>
@@ -89,6 +97,30 @@
 
             }
         });
+        function submitbtn(){
+            getElementById("submit1").disabled=true;
+        //Validation code goes here
+        };
+        function makelocalDisable(){
+          var x=document.getElementById("upload_local_dataset")
+          x.disabled=true
+          };
+         function makeserverEnable(){
+             var x=document.getElementById("upload_server_dataset")
+              x.disabled=false
+         };
+         function makelocalEnable(){
+          var x=document.getElementById("upload_local_dataset")
+          x.disabled=false
+          };
+         function makeserverDisable(){
+             var x=document.getElementById("upload_server_dataset")
+              x.disabled=true
+         };
+
+
+
+
      </script>
 
 {% endblock %}
