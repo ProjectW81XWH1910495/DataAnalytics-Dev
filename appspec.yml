@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: .
-    destination: /home/ec2-user/dataanalytics/
+    destination: /home/ec2-user/DataAnalytics/
 hooks:
   BeforeInstall:
     - location: scripts/install_dependencies
