@@ -2,7 +2,7 @@
 {% block content %}
     <div class="site-header-logo">
         <h1 class="text-center">
-            Retrieve Subsets
+            Retrieve Columns
         </h1>
     </div>
 
@@ -30,7 +30,7 @@
                     <h3>Please set minimum and maximum value for continuous columns</h3>
                     <div class="dashboard-editor-container"  >
                     {% for column, limits in continuous_columns.items() %}
-                    <label>{{column}}:</label>
+                    <label>{{column}}:</label><br/>
                         <label for="value_{{column}}_minimum">minimum value</label>
                         <input type="text" id="value_{{column}}_minimum" name="continuous_filters_minimum_{{column}}"
                                value ="{{limits[0]}}" min="{{limits[0]}}" max="{{limits[1]}}">

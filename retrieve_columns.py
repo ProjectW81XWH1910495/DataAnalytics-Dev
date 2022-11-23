@@ -35,7 +35,7 @@ def find_columns_to_be_expanded(data):
         parameter_list = data[column].tolist()
         # print(parameter_list)
         # check if this column has multiple values
-        if not isinstance(parameter_list[0], str) or not isinstance(eval(parameter_list[0]), dict):
+        if not isinstance(parameter_list[0], str) or ":" not in parameter_list[0] or not isinstance(eval(parameter_list[0]), dict):
             continue
         candidate_columns.append(column)
     print(candidate_columns)
@@ -231,10 +231,10 @@ def sort_data_based_on_target_columns(input_path, target_columns, expand, unique
     if df is None:
         print(f'the type of the input file-{input_path} is incorrect!Please check!!')
         return
-    for column in target_columns:
-        if column not in df.columns:
-            expand = True
-            break
+    # for column in target_columns:
+    #     if column not in df.columns:
+    #         expand = True
+    #         break
     if expand:
         all_columns = df.columns
         df = expand_parameters_stored_in_one_column(input_path, all_columns)[0]
@@ -256,7 +256,7 @@ def sort_data_based_on_target_columns(input_path, target_columns, expand, unique
         sorted_df.to_csv(output_path, index=False)
         print('successfully retrieve unique values of target_columns')
     print(f'the length of new file: {len(sorted_df)}')
-    return
+    return sorted_df
 def find_intersection_of_different_table(file_paths, output_path, target_columns, expand, unique):
     df = read_file(input_path)
     if df is None:
@@ -289,13 +289,17 @@ def find_intersection_of_different_table(file_paths, output_path, target_columns
     return
 
 def find_available_filters(data):
+    print('begin to find available filters')
     diversity_filters = {}
     continuous_filters = {}
     data.replace("nan", np.nan, inplace=True)
     data = data.dropna(axis=1,how='any')
     for column in data.columns:
         result = list(set(data[column].values))
-        if len(result) <= 1: continue
+        if isinstance(result[0], str) and ":" in result[0]:
+            continue
+        elif len(result) <= 1:
+            continue
 
         elif len(result) >= 20:
             continuous_filters[column] = [int(min(result)), math.ceil(max(result))]

@@ -1,4 +1,4 @@
-from application import application
+from application import application, errors
 from flask import render_template, request, url_for, redirect, send_file, flash
 import pandas as pd
 import numpy as np
@@ -19,7 +19,7 @@ from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif
 from functools import partial
 import shap
-from retrieve_columns import expand_parameters_stored_in_one_column
+from retrieve_columns import expand_parameters_stored_in_one_column,sort_data_based_on_target_columns
 from retrieve_columns import read_file,retrieve_target_columns_based_on_values
 from retrieve_columns import find_columns_to_be_expanded, find_available_filters
 from sklearn.ensemble import RandomForestClassifier
@@ -438,8 +438,9 @@ def heat():
         return render_template('heatmap.html', graph1JSON=graph1JSON,dataset_name = dataset_name)
 
 
-@application.route('/upload_dataset', methods =['POST','GET'])
-def upload_dataset():
+
+@application.route('/upload_dataset/<flag>', methods =['POST','GET'])
+def upload_dataset(flag):
     file_dir = "dataset/"
     files = os.listdir(file_dir)
     data, data_path, head = None, None, None
@@ -454,108 +455,143 @@ def upload_dataset():
                 data = read_file(data_path)
             if not data_path:
                 flash("please upload a dataset in suitable format('.csv .xlsx .txt')")
-                return render_template('upload_dataset.html',data=None, files=files)
+                return render_template('upload_dataset.html',flag=0,data=None, files=files)
             else:
                 file_size = os.path.getsize(data_path)
-                if file_size >= 5000000:
-                    flash(f"the maximum file size limit is 500M! Your file is {file_size/1000000}M! Please upload another dataset")
-                    return render_template('upload_dataset.html', data=None, files=files)
+                if file_size >= 500000000:
+                    flash(f"the maximum file size limit is 500M! Your file is {file_size/1024/1024}M! Please upload another dataset")
+                    return render_template('upload_dataset.html',flag=0,data=None, files=files)
         else:
             print('existing dataset')
             dataset_name = request.form.get("dataset_name", None)
             data_path = 'dataset/' + str(dataset_name)
-            data = read_file(data_path)
-            print('show!!!')
-            if not data_path:
+
+            if not dataset_name:
                 flash("the dataset you chose is not in a suitable format('.csv .xlsx .txt')")
-                return render_template('upload_dataset.html',data=None, files=files)
+                return render_template('upload_dataset.html',flag=0,data=None, files=files)
             else:
+                data = read_file(data_path)
                 file_size = os.path.getsize(data_path)
                 if file_size >= 300000000:
                     flash(
                         f"the maximum file size limit is 500M! Your file is {file_size / 1000000}M! Please upload another dataset")
-                    return render_template('upload_dataset.html', data=None, files=files)
-        return render_template('upload_dataset.html', data=data.head(100), heads=data.columns, data_path = data_path, files = files)
+                    return render_template('upload_dataset.html', flag=0,data=None, files=files)
+        if int(flag) == 1:
+            return render_template('retrieve_subsets.html',data_path=data_path,data=data,heads=data.columns)
+        return render_template('upload_dataset.html',flag=0, data=data.head(100), heads=data.columns, data_path = data_path, files = files)
 
-    return render_template('upload_dataset.html', data=None, files=files)
-
-@application.route('/expand_data/', methods=['POST','GET'])
-def expand_data():
-    if request.method == "POST":
-        data_path = request.form.get('data_path_1', None)
-        check_columns = request.form.getlist('checkbox', None)
-        data_path2 = request.form.get('data_path_2', None)
-        print('1',data_path)
-        if data_path:
-            data = read_file(data_path)
-            candidate_columns = find_columns_to_be_expanded(data)
-            print(candidate_columns)
-            if not candidate_columns:
-                return render_template('retrieve_columns.html')
-            else:
-                return render_template('expand_data.html',data=data, data_path = data_path, candidate_columns = candidate_columns,new_data=None)
-
-        if check_columns:
-            old_df = read_file(data_path2)
-            heads = old_df.columns
-            new_df, sub_parameters = expand_parameters_stored_in_one_column(data_path2, check_columns)
-
-            data_path_expand = data_path2[:-4] +'_expand'+data_path2[-4:]
-
-            new_df.to_csv(data_path_expand,index=False)
-            print(new_df.head())
-            return render_template('expand_data.html', new_data=new_df, data_path = data_path_expand, heads = heads,sub_parameters=sub_parameters)
-
-
-
-
-    print('aaaaaa')
-    return render_template('retrieve_columns.html')
-
-@application.route('/show_table/<path:data_path>/',methods=['POST','GET'])
-def show_table(data_path):
+    return render_template('upload_dataset.html', flag=0,data=None, files=files)
+@application.route('/retrieve_subsets/<path:data_path>',methods=['POST','GET'])
+def retrieve_subsets(data_path):
     data = read_file(data_path)
-    print(data.head())
+    if request.method =='POST':
+        pass
+    return render_template('retrieve_subsets.html',data=data,data_path=data_path,heads=data.columns)
+@application.route('/expand_data/<path:data_path>', methods=['POST','GET'])
+def expand_data(data_path):
+    data = read_file(data_path)
+    try:
+        candidate_columns = find_columns_to_be_expanded(data)
+        if not candidate_columns:
+            flash("the dataset doesn't need to be expanded!")
+            return render_template('retrieve_subsets.html', data=data,data_path=data_path,heads=data.columns)
+        if request.method == 'POST':
+            check_columns = request.form.getlist('checkbox', None)
+            if check_columns:
+                new_df, sub_parameters = expand_parameters_stored_in_one_column(data_path, check_columns)
+                data_path_expand = data_path[:-4] +'_expand'+data_path[-4:]
+                new_df.to_csv(data_path_expand,index=False)
+                print(new_df.head(3))
+                heads = new_df.columns
+                return render_template('expand_data.html', new_data=new_df, data_path = data_path_expand, heads = heads,sub_parameters=sub_parameters)
+    except:
+        flash("please recheck your dataset")
+        return render_template('retrieve_subsets.html', data=data,data_path=data_path, heads=data.columns)
+    return render_template('expand_data.html',data_path=data_path, candidate_columns=candidate_columns, new_data = None)
+
+@application.route('/return_sorted_results/<path:data_path>', methods=['POST','GET'])
+def return_sorted_results(data_path):
+    data = read_file(data_path)
+    ready_to_return=False
+    try:
+        if find_columns_to_be_expanded(data):
+             flash("the dataset you chose has sub-parameters, please go to expand the dataset first!")
+             return render_template('retrieve_subsets.html',data_path=data_path,data=data,heads=data.columns)
+        print(data.head())
+        #find continuous columns
+        continuous_columns = find_available_filters(data)[1]
+        if request.method=='POST':
+            target_columns = request.form.getlist('choose_target_column')
+            ascending = request.form.get('ascending')
+            return_columns = request.form.getlist('check_return_columns', None)  # return columns
+            if return_columns: ready_to_return = True
+            if ready_to_return:
+                output_path = data_path[:-4] +'_sort'+data_path[-4:]
+                unique=False
+                expand=False
+                k=10
+                ascending = True if ascending=='ascending' else False
+                new_df=sort_data_based_on_target_columns(data_path, target_columns, expand, unique, output_path, ascending, k)
+                print('sort succesfully!')
+                new_df = new_df[return_columns]
+                print(new_df.head())
+                new_df.to_csv(output_path,index=False)
+                return render_template('retrieve_subsets.html',data_path=output_path,data=new_df,heads=new_df.columns)
+    except Exception:
+        flash("please recheck your dataset!")
+        return render_template('retrieve_subsets.html', data=data, data_path=data_path)
+    return render_template('return_sorted_results.html',continuous_columns=continuous_columns,all_columns=data.columns)
+
+
+
+# @application.route('/show_table/<path:data_path>/',methods=['POST','GET'])
+# def show_table(data_path):
+#     data = read_file(data_path)
+#     print(data.head())
 
 @application.route('/retrieve_columns/<path:data_path>/', methods = ['POST','GET'])
 def retrieve_columns(data_path):
     data = read_file(data_path)
-    print(data.head())
-    diversity_columns, continuous_columns = find_available_filters(data)
-    diversity_filters, continuous_filters = {}, defaultdict(list)
-    retrieved = False
-    if request.method == 'POST':
+    try:
+        # if find_columns_to_be_expanded(data):
+        #     flash("the dataset you chose has sub-parameters, please go to expand the dataset first!")
+        #     return render_template('retrieve_subsets.html',data_path=data_path,data=data)
+        print(data.head())
+        diversity_columns, continuous_columns = find_available_filters(data)
+        print(continuous_columns)
+        diversity_filters, continuous_filters = {}, defaultdict(list)
+        retrieved = False
+        if request.method == 'POST':
+            #diversity_filters = request.form.getlist('diversity_filters')
+            for column in diversity_columns:
+                if request.form.get(f"diversity_filters_{column}"):
+                    retrieved = True
+                    diversity_filters[column] = request.form.getlist(f"diversity_filters_{column}", None)
+                    if 'any' in diversity_filters[column]:
+                        del diversity_filters[column]
+            for column in continuous_columns:
+                if request.form.get(f"continuous_filters_minimum_{column}"):
+                    retrieved = True
+                    continuous_filters[column].append(float(request.form.get(f"continuous_filters_minimum_{column}")))
+                    continuous_filters[column].append(float(request.form.get(f"continuous_filters_maximum_{column}")))
+            print(diversity_filters,'diversity_filters')
+            print(continuous_filters,'continuous_filters')
+            return_columns = request.form.getlist('check_return_columns', None)  # return columns
+            print('all',return_columns)
+            if return_columns: retrieved = True
+            if retrieved:
+                output_path = data_path[:-4] +'_retrieve'+data_path[-4:]
+                unique = False
+                expand = False
+                new_df = retrieve_target_columns_based_on_values(data_path, requirements=diversity_filters, range_requirements=continuous_filters,
+                                                        target_columns=return_columns,output_path=output_path, unique=unique, expand=expand)
 
-        #diversity_filters = request.form.getlist('diversity_filters')
+                print('retrieve succesfully!')
+                return render_template('retrieve_subsets.html',data_path=output_path,data=new_df,heads=new_df.columns)
 
-        for column in diversity_columns:
-            if request.form.get(f"diversity_filters_{column}"):
-                retrieved = True
-                diversity_filters[column] = request.form.getlist(f"diversity_filters_{column}", None)
-                if 'any' in diversity_filters[column]:
-                    del diversity_filters[column]
-        for column in continuous_columns:
-            if request.form.get(f"continuous_filters_minimum_{column}"):
-                retrieved = True
-                continuous_filters[column].append(float(request.form.get(f"continuous_filters_minimum_{column}")))
-                continuous_filters[column].append(float(request.form.get(f"continuous_filters_maximum_{column}")))
-        print(diversity_filters,'diversity_filters')
-        print(continuous_filters,'continuous_filters')
-        return_columns = request.form.getlist('check_return_columns', None)  # return columns
-        print('all',return_columns)
-        if return_columns: retrieved = True
-        if retrieved:
-            output_path = data_path[:-4] +'_retrieve'+data_path[-4:]
-            unique = False
-            expand = False
-            new_df = retrieve_target_columns_based_on_values(data_path, requirements=diversity_filters, range_requirements=continuous_filters,
-                                                    target_columns=return_columns,output_path=output_path, unique=unique, expand=expand)
-
-            print('retrieve succesfully!')
-            return render_template('retrieve_columns.html', data_path = output_path, data = new_df, df_length=len(new_df), all_columns = new_df.columns,
-                                        diversity_filters=diversity_filters, continuous_filters=continuous_filters,new_df=new_df)
-
-    all_columns = list(data.columns)
+    except:
+        flash("Please recheck your dataset's format")
+        return render_template('retrieve_subsets.html', data=data, data_path=data_path)
     return render_template('retrieve_columns.html',data_path = data_path, data = data,df_length=len(data),
                            all_columns = data.columns, i = 0,
                            diversity_columns = diversity_columns, continuous_columns=continuous_columns, new_df = None)
