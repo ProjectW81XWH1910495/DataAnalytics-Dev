@@ -288,23 +288,40 @@ def find_intersection_of_different_table(file_paths, output_path, target_columns
     print(f'the length of new file: {len(sorted_df)}')
     return
 
-def find_available_filters(data):
+def find_available_filters(data_path):
+    data = read_file(data_path)
     print('begin to find available filters')
     diversity_filters = {}
     continuous_filters = {}
-    data.replace("nan", np.nan, inplace=True)
-    data = data.dropna(axis=1,how='any')
+    #data.replace("nan", np.nan, inplace=True)
+    #data = data.dropna(axis=1,how='any')
+    print('begin')
     for column in data.columns:
-        result = list(set(data[column].values))
-        if isinstance(result[0], str) and ":" in result[0]:
-            continue
-        elif len(result) <= 1:
-            continue
+        print(column)
+        if pd.isnull(data.at[0, column]): continue
+        if ":" in str(data.at[0,column]): continue
+        length= len(data[column].unique())
+        print(length)
 
-        elif len(result) >= 20:
-            continuous_filters[column] = [int(min(result)), math.ceil(max(result))]
+        #if not result[0]: continue
+        #if isinstance(result[0], str) and ":" in result[0]:
+        #    continue
+        if length <= 1: continue
+        print(data.iloc[0:5][column].values)
+        result = data.iloc[0:5][column]
+        #print(result)
+        if column =='rank_test_auc':
+            print(result.dtype)
+        if isinstance(result[0],str) and ":" in result[0]:
+            continue
+        if length>=20:
+            if pd.api.types.is_float(result[0]) or isinstance(result[0],np.int32) or isinstance(result[0],np.int64):
+                continuous_filters[column] = [data[column].min(), data[column].max()+0.001]
+            else:
+                diversity_filters[column] = data[column].unique()
         else:
-            diversity_filters[column] = result
+            diversity_filters[column] = data[column].unique()
+    print('finish')
     return diversity_filters, continuous_filters
 # def retrieve_columns(input_path,parameterList,output_path, ifDeleteNull=False):
 #     """
